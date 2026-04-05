@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Easy Finance
 
-## Getting Started
+Easy Finance is a Next.js app built with React 19, Tailwind CSS, Clerk authentication, and Prisma for database access. It provides a finance dashboard and member reporting interface with secure sign-in and user data storage.
 
-First, run the development server:
+## Features
+
+- Next.js App Router
+- Clerk auth (`@clerk/nextjs`)
+- Prisma ORM with Neon adapter
+- Tailwind CSS styling
+- Responsive navbar with mobile menu
+- Member dashboard and monthly report pages
+
+## Project setup
+
+```bash
+npm install
+```
+
+### Environment
+
+Create a `.env` file at the project root and add the required values:
+
+```env
+NEXT_PUBLIC_CLERK_FRONTEND_API=your-clerk-frontend-api
+CLERK_API_KEY=your-clerk-api-key
+CLERK_JWT_KEY=your-clerk-jwt-key
+DATABASE_URL=your-database-connection-string
+```
+
+> If you are using Prisma with Neon, your `DATABASE_URL` should match the Neon connection string format.
+
+### Database
+
+Generate the Prisma client and push the schema to the database:
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### Development
+
+Run the local development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000` in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` — start the Next.js dev server
+- `npm run build` — build the production app
+- `npm run start` — run the production build
+- `npm run lint` — run ESLint
 
-## Learn More
+## App structure
 
-To learn more about Next.js, take a look at the following resources:
+- `app/` — application routes and layout
+- `components/` — reusable UI components
+- `lib/` — utility modules and database helpers
+- `public/` — static assets
+- `prisma/` — Prisma schema and migrations (if present)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- The navbar uses Clerk `SignInButton` and `SignOutButton`
+- The project includes a mobile hamburger menu for smaller screens
+- `app/loading.tsx` is used for route loading states
 
-## Deploy on Vercel
+## Troubleshooting
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- If Clerk auth fails, verify Clerk environment variables
+- If Prisma fails, verify `DATABASE_URL` and re-run `npx prisma db push`
+- If the app hydration warning occurs, check `app/layout.tsx` for `suppressHydrationWarning`
