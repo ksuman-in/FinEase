@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "postinstall": "prisma generate --schema=./prisma/schema.prisma",
-    "build": "prisma generate --schema=./prisma/schema.prisma && next build",
+    "postinstall": "prisma generate",
+    "build": "dotenv -e .env -- prisma generate && dotenv -e .env -- prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -34,6 +34,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "prisma": "^7.6.0",

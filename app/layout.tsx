@@ -31,7 +31,7 @@ export default function RootLayout({
     >
       <body
         suppressHydrationWarning
-        className="min-h-screen bg-[#020617] text-slate-50 antialiased"
+        className="dashboard-bg min-h-screen text-slate-100"
       >
         <ClerkProvider>
           <div className="relative flex min-h-screen flex-col">
