@@ -1,5 +1,6 @@
 import { GlassTable } from "@/components/glass/Table";
 import MemberList from "@/components/layout/MemberList";
+import WelcomeScreen from "@/components/layout/Welcome";
 import checkMember from "@/lib/checkMember";
 import globalSettings from "@/lib/database/globalSettings";
 import { auth } from "@clerk/nextjs/server";
@@ -48,17 +49,11 @@ const stats = [
 export default async function Dashboard() {
   const { userId } = await auth();
   await checkMember();
-  const settings = await globalSettings();
-  console.log({ settings });
   if (!userId) {
-    return (
-      <div className="flex">
-        <h1>Welcome to Fin Ease</h1>
-      </div>
-    );
+    return <WelcomeScreen />;
   }
   return (
-    <div className="space-y-4 min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 p-10">
+    <div className="space-y-4 min-dvh bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 p-10">
       <h1 className="text-3xl font-bold text-white mb-8">Finance Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

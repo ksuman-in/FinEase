@@ -104,9 +104,7 @@ export default function Navbar() {
             <SignOutButton />
           </div>
         </Show>
-        <Show when="signed-out">
-          <SignInButton />
-        </Show>
+        <Show when="signed-out">{/* <SignInButton /> */}</Show>
       </div>
 
       {/* Mobile Menu */}

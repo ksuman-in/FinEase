@@ -12,33 +12,34 @@ import {
 import getMonthlyReport from "@/lib/database/getMonthlyReport";
 import { formatDate } from "@/lib/utils";
 
-type ReportType = {
-  id: number;
-  reportDate: Date;
-  interestCollected: number;
-  loansDisbursed: number;
-  principalRecovered: number;
-  totalInterest: number;
-  totalMembersFund: number;
-  totalDistributed: number;
-  cashInHand: number;
-  totalGroupValue: number;
-};
-
 export default async function Report() {
   const allReport = await getMonthlyReport();
-  console.log({ allReport });
   const reports = allReport || [];
   const history = [...reports]?.reverse().slice(1);
 
-  const data =
-    reports
-      .sort(
-        (prev, curr) =>
-          new Date(curr?.reportDate).getTime() -
-          new Date(prev?.reportDate).getTime(),
-      )
-      .at(0) || ({} as ReportType);
+  const data = reports
+    .sort(
+      (prev, curr) =>
+        new Date(curr?.reportDate).getTime() -
+        new Date(prev?.reportDate).getTime(),
+    )
+    .at(0);
+
+  if (!data) {
+    return (
+      <div className="p-6 bg-slate-950 text-slate-100 min-h-screen font-sans">
+        <h1 className="text-3xl font-bold">No reports available</h1>
+        <p className="text-slate-400">
+          Financial reports will appear here once generated.
+        </p>
+      </div>
+    );
+  }
+
+  const distributionPercentage =
+    data.totalGroupValue > 0
+      ? (data.totalDistributed / data.totalGroupValue) * 100
+      : 0;
 
   return (
     <div className="p-6 bg-slate-950 text-slate-100 min-h-screen font-sans">
@@ -128,15 +129,12 @@ export default async function Report() {
               <div
                 className="bg-cyan-500 h-full"
                 style={{
-                  width: `${(data.totalDistributed / data.totalGroupValue) * 100}%`,
+                  width: `${distributionPercentage}%`,
                 }}
               />
             </div>
             <p className="text-xs text-slate-500 mt-4 uppercase tracking-widest">
-              {((data.totalDistributed / data.totalGroupValue) * 100).toFixed(
-                1,
-              )}
-              % of Group Value
+              {distributionPercentage.toFixed(1)}% of Group Value
             </p>
           </div>
         </div>
