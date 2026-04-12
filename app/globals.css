@@ -4,12 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-body {
-  background-image: 
-    radial-gradient(at 0% 0%, hsla(189, 93%, 30%, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(221, 83%, 30%, 0.15) 0px, transparent 50%);
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -132,6 +126,13 @@ body {
   }
   html {
     @apply font-sans;
+  }
+  .dashboard-bg {
+    background-color: #020617; /* Slate-950 */
+    background-image: 
+      radial-gradient(at 0% 0%, #057e9426 0, transparent 100%), 
+      radial-gradient(at 100% 100%, #0d358c26 0, transparent 100%);
+    background-attachment: fixed;
   }
 }
 .cl-userProfile-root{
