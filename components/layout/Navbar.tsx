@@ -9,6 +9,7 @@ import {
   UserCircle,
   Menu,
   X,
+  User,
 } from "lucide-react";
 import { Show, SignInButton, SignOutButton } from "@clerk/nextjs";
 
@@ -16,6 +17,7 @@ const navItems = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   // { name: "Borrower Ext", href: "/borrowers", icon: UsersRound },
   { name: "Monthly Report", href: "/reports", icon: FileBarChart },
+  { name: "Members", href: "/members", icon: User },
   { name: "Profile", href: "/profile", icon: UserCircle },
 ];
 

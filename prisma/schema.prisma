@@ -12,6 +12,19 @@ datasource db {
   provider = "postgresql"
 }
 
+enum LoanStatus {
+  ACTIVE
+  PAID
+  DEFAULTED
+}
+
+enum TransactionType {
+  CONTRIB // Monthly 1000 deposit
+  INT_PAID // 1% or 1.5% Profit
+  PRIN_REPAY // Repaying the actual loan amount
+  NEW_LOAN // Taking money out
+}
+
 model Member {
   id       Int     @id @default(autoincrement())
   memberId String  @unique
@@ -22,6 +35,9 @@ model Member {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  loans        MemberLoan[]
+  transactions MemberTransaction[]
 }
 
 model GlobalSettings {
@@ -34,4 +50,53 @@ model GlobalSettings {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model MemberLoan {
+  id           String     @id @default(uuid())
+  memberId     String
+  amount       Float
+  interestRate Float      @default(1.0)
+  status       LoanStatus @default(ACTIVE)
+  issuedAt     DateTime   @default(now())
+
+  // Relations
+  member       Member              @relation(fields: [memberId], references: [memberId])
+  transactions MemberTransaction[]
+
+  @@index([memberId])
+}
+
+model MemberTransaction {
+  id          String          @id @default(uuid())
+  memberId    String
+  loanId      String?
+  amount      Float
+  type        TransactionType
+  date        DateTime        @default(now())
+  description String?
+
+  // Relations
+  member Member      @relation(fields: [memberId], references: [memberId])
+  loan   MemberLoan? @relation(fields: [loanId], references: [id])
+
+  @@index([memberId, date])
+  @@index([type])
+}
+
+model MonthlyReport {
+  id         String   @id @default(uuid())
+  reportDate DateTime @unique
+
+  // Monthly Flow (In/Out during this month)
+  interestCollected  Float @default(0) // Profit
+  loansDisbursed     Float @default(0) // New money out
+  principalRecovered Float @default(0) // Debt returned
+
+  // Group Status (Snapshots at month-end)
+  totalInterest    Float @default(0)
+  totalMembersFund Float @default(0) // Total savings
+  totalDistributed Float @default(0) // Outstanding Principal
+  cashInHand       Float @default(0) // Liquid cash
+  totalGroupValue  Float @default(0) // Cash + Distributed
 }
