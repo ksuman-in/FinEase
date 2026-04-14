@@ -1,26 +1,29 @@
-import React from "react";
+import { ShieldCheck } from "lucide-react";
 
 export default function Loading() {
-  const items = Array.from({ length: 6 });
-
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 p-10">
-      <div className="h-8 w-64 bg-white/20 rounded-md animate-pulse mb-8" />
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950">
+      {/* Logo Wrapper */}
+      <div className="relative">
+        {/* Pulsing Outer Glow */}
+        <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full animate-pulse" />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {items.map((_, index) => (
-          <div
-            key={index}
-            className="backdrop-blur-lg bg-white/10 border border-white/20 rounded-2xl p-6 shadow-lg"
-          >
-            <div className="flex items-center justify-between">
-              <div className="h-4 w-32 bg-white/20 rounded animate-pulse" />
-              <div className="h-6 w-6 bg-white/20 rounded animate-pulse" />
-            </div>
+        {/* The Logo Icon */}
+        <div className="relative flex items-center justify-center w-20 h-20 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl">
+          <ShieldCheck className="w-10 h-10 text-blue-500 animate-in fade-in zoom-in duration-700" />
+        </div>
+      </div>
 
-            <div className="h-8 w-40 bg-white/20 rounded mt-6 animate-pulse" />
-          </div>
-        ))}
+      {/* Brand Text */}
+      <div className="mt-6 flex flex-col items-center gap-2">
+        <h2 className="text-xl font-black tracking-tighter text-white">
+          Fin<span className="text-blue-500">Ease</span>
+        </h2>
+
+        {/* Minimal Progress Bar */}
+        <div className="w-32 h-[2px] bg-white/5 rounded-full overflow-hidden">
+          <div className="h-full bg-blue-500 w-full -translate-x-full animate-[loading-bar_1.5s_infinite_ease-in-out]" />
+        </div>
       </div>
     </div>
   );

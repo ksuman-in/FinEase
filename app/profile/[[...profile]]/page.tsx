@@ -1,5 +1,3 @@
-import { UserProfile } from "@clerk/nextjs";
-
-const Profile = () => <UserProfile />;
+const Profile = () => <div>Use Profile</div>;
 
 export default Profile;
