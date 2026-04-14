@@ -1,11 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
 }
 
 datasource db {
@@ -19,25 +13,69 @@ enum LoanStatus {
 }
 
 enum TransactionType {
-  CONTRIB // Monthly 1000 deposit
-  INT_PAID // 1% or 1.5% Profit
-  PRIN_REPAY // Repaying the actual loan amount
-  NEW_LOAN // Taking money out
+  CONTRIB
+  INT_PAID
+  PRIN_REPAY
+  NEW_LOAN
 }
 
-model Member {
-  id       Int     @id @default(autoincrement())
-  memberId String  @unique
-  name     String
-  phone    String?
-  email    String? @unique
-  clerkId  String  @unique
+// --- Better Auth & Core Business Models ---
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
+  // Custom FinEase Fields
+  role        String? @default("member") // admin, member, borrower
+  phoneNumber String? @unique
+
+  // Financial Relations (Moved from Member)
   loans        MemberLoan[]
   transactions MemberTransaction[]
+
+  sessions Session[]
+  accounts Account[]
+
+  @@map("user")
+}
+
+// --- Financial Models ---
+
+model MemberLoan {
+  id           String     @id @default(uuid())
+  userId       String
+  amount       Float
+  interestRate Float      @default(1.0)
+  status       LoanStatus @default(ACTIVE)
+  issuedAt     DateTime   @default(now())
+
+  // Relations
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions MemberTransaction[]
+
+  @@index([userId])
+}
+
+model MemberTransaction {
+  id          String          @id @default(uuid())
+  userId      String
+  loanId      String?
+  amount      Float
+  type        TransactionType
+  date        DateTime        @default(now())
+  description String?
+
+  // Relations
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loans MemberLoan? @relation(fields: [loanId], references: [id])
+
+  @@index([userId, date])
+  @@index([type])
 }
 
 model GlobalSettings {
@@ -50,38 +88,6 @@ model GlobalSettings {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model MemberLoan {
-  id           String     @id @default(uuid())
-  memberId     String
-  amount       Float
-  interestRate Float      @default(1.0)
-  status       LoanStatus @default(ACTIVE)
-  issuedAt     DateTime   @default(now())
-
-  // Relations
-  member       Member              @relation(fields: [memberId], references: [memberId])
-  transactions MemberTransaction[]
-
-  @@index([memberId])
-}
-
-model MemberTransaction {
-  id          String          @id @default(uuid())
-  memberId    String
-  loanId      String?
-  amount      Float
-  type        TransactionType
-  date        DateTime        @default(now())
-  description String?
-
-  // Relations
-  member Member      @relation(fields: [memberId], references: [memberId])
-  loan   MemberLoan? @relation(fields: [loanId], references: [id])
-
-  @@index([memberId, date])
-  @@index([type])
 }
 
 model MonthlyReport {
@@ -99,4 +105,52 @@ model MonthlyReport {
   totalDistributed Float @default(0) // Outstanding Principal
   cashInHand       Float @default(0) // Liquid cash
   totalGroupValue  Float @default(0) // Cash + Distributed
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }

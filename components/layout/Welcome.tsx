@@ -68,7 +68,7 @@ const WelcomeScreen = () => {
         />
         <FeatureItem
           icon={<ShieldCheck className="text-cyan-400" />}
-          title="Clerk Secured"
+          title="Auth Secured"
           desc="Enterprise-grade security for our group's private data."
         />
       </div>

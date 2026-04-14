@@ -1,8 +1,7 @@
-import { auth } from "@clerk/nextjs/server";
 import { prisma } from "../db";
 
 export default async function globalSettings() {
-  const user = await auth();
+  const user = await { userId: null };
 
   if (!user.userId) {
     return null;

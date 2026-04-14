@@ -11,14 +11,14 @@ import {
   X,
   User,
 } from "lucide-react";
-import { Show, SignInButton, SignOutButton } from "@clerk/nextjs";
+import { Session } from "@/lib/auth-types";
+import { LogoutButton } from "./LogoutButton";
 
 const navItems = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  // { name: "Borrower Ext", href: "/borrowers", icon: UsersRound },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Monthly Report", href: "/reports", icon: FileBarChart },
   { name: "Members", href: "/members", icon: User },
-  { name: "Profile", href: "/profile", icon: UserCircle },
+  { name: "Profile", href: "/dashboard/profile", icon: UserCircle },
 ];
 
 const EasyFinanceLogo = () => (
@@ -62,7 +62,7 @@ const EasyFinanceLogo = () => (
   </svg>
 );
 
-export default function Navbar() {
+export default function Navbar({ session }: { session: Session | null }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -75,62 +75,64 @@ export default function Navbar() {
           </span>
         </div>
 
-        <Show when="signed-in">
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors group"
-              >
-                <item.icon
-                  size={18}
-                  className="group-hover:scale-110 transition-transform"
-                />
-                <span className="text-sm font-medium">{item.name}</span>
-              </Link>
-            ))}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-gray-400 hover:text-cyan-400 transition-colors"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-
-          <div className="hidden md:flex px-4 py-1.5 rounded-full bg-white/5 border border-white/10 cursor-pointer">
-            <SignOutButton />
-          </div>
-        </Show>
-        <Show when="signed-out">
-          <SignInButton />{" "}
-        </Show>
-      </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden border-t border-white/10 bg-black/40 backdrop-blur-md">
-          <div className="px-6 py-4 space-y-4">
-            <Show when="signed-in">
+        {session?.session?.id && (
+          <>
+            <div className="hidden md:flex items-center gap-8">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="flex items-center gap-3 text-gray-400 hover:text-cyan-400 transition-colors py-2"
-                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors group"
                 >
-                  <item.icon size={20} />
+                  <item.icon
+                    size={18}
+                    className="group-hover:scale-110 transition-transform"
+                  />
                   <span className="text-sm font-medium">{item.name}</span>
                 </Link>
               ))}
-              <div className="border-t border-white/10 pt-4 mt-4">
-                <div className="text-gray-400 hover:text-cyan-400 transition-colors">
-                  <SignOutButton />
-                </div>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden p-2 text-gray-400 hover:text-cyan-400 transition-colors"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+
+            <div className="hidden md:flex px-4 py-1.5 rounded-full bg-white/5 border border-white/10 cursor-pointer">
+              <LogoutButton />
+            </div>
+          </>
+        )}
+        {!session?.session?.id && (
+          <div>
+            <Link href={"/login"}>Sign In</Link>
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Menu */}
+      {session?.session?.id && isOpen && (
+        <div className="md:hidden border-t border-white/10 bg-black/40 backdrop-blur-md">
+          <div className="px-6 py-4 space-y-4">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="flex items-center gap-3 text-gray-400 hover:text-cyan-400 transition-colors py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                <item.icon size={20} />
+                <span className="text-sm font-medium">{item.name}</span>
+              </Link>
+            ))}
+            <div className="border-t border-white/10 pt-4 mt-4">
+              <div className="text-gray-400 hover:text-cyan-400 transition-colors">
+                <LogoutButton />
               </div>
-            </Show>
+            </div>
           </div>
         </div>
       )}

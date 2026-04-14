@@ -9,17 +9,30 @@ import {
   Calendar,
   ChevronRight,
 } from "lucide-react";
-import getMonthlyReport from "@/lib/database/getMonthlyReport";
 import { formatDate } from "@/lib/utils";
+import getMonthlyReport from "@/lib/actions/getReports";
+
+export interface MonthlyReport {
+  id: string;
+  reportDate: string;
+  totalContributions: number;
+  totalLoansDisbursed: number;
+  interestGenerated: number;
+  memberCount: number;
+  status: "DRAFT" | "FINALIZED";
+  createdAt: Date | string; // Use string if you've serialized it from the
+  updatedAt: Date | string;
+}
 
 export default async function Report() {
   const allReport = await getMonthlyReport();
+  console.log({ allReport });
   const reports = allReport || [];
   const history = [...reports]?.reverse().slice(1);
 
   const data = reports
     .sort(
-      (prev, curr) =>
+      (prev: MonthlyReport, curr: MonthlyReport) =>
         new Date(curr?.reportDate).getTime() -
         new Date(prev?.reportDate).getTime(),
     )
