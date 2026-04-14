@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-slate-950 pt-20">
+    <div className="min-h-screen bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           {/* Left Side: Brand Value */}
