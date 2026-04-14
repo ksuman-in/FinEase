@@ -4,6 +4,8 @@ import ProfileCard from "@/components/dashboard/ProfileCard";
 export default async function ProfilePage() {
   const { user } = await authGuard();
 
+  const displayName = user.name?.trim() || "User";
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-12 lg:py-20">
       <header className="mb-12">
@@ -20,9 +22,9 @@ export default async function ProfilePage() {
         <div className="md:col-span-1 space-y-6">
           <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] flex flex-col items-center text-center">
             <div className="w-24 h-24 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center text-3xl font-black text-white shadow-2xl shadow-blue-500/20 mb-4">
-              {user.name[0]}
+              {displayName[0].toUpperCase()}
             </div>
-            <h3 className="text-xl font-bold text-white">{user.name}</h3>
+            <h3 className="text-xl font-bold text-white">{displayName}</h3>
             <span className="mt-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-black uppercase tracking-widest text-blue-400">
               {user.role || "Member"}
             </span>
