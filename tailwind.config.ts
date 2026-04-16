@@ -13,6 +13,11 @@ const tailwindConfig = {
           "50%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(100%)" },
         },
+        "loading-slide": {
+          "0%": { transform: "translateX(-150%)" },
+          "50%": { transform: "translateX(100%)", width: "40%" },
+          "100%": { transform: "translateX(300%)" },
+        },
       },
       animation: {
         "loading-bar": "loading-bar 1.5s infinite ease-in-out",

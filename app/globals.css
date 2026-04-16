@@ -121,9 +121,31 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
+  :root {
+    /* Main Theme Tokens */
+    --app-bg: #f8fafc;        /* Slate-50 */
+    --app-foreground: #0f172a; /* Slate-900 */
+    
+    /* Card Tokens */
+    --card-bg: #ffffff;
+    --card-border: #e2e8f0;    /* Slate-200 */
+    
+    /* Accent Tokens */
+    --primary: #2563eb;        /* Blue-600 */
+    --accent-bg: #eff6ff;     /* Blue-50 */
   }
+
+  /* You can add a .dark class here later if you want a toggle */
+  .dark-mode-override {
+    --app-bg: #020617;        /* Slate-950 */
+    --app-foreground: #f8fafc; /* Slate-50 */
+    --card-bg: #0f172a;
+    --card-border: #1e293b;
+  }
+  body {
+  background-color: var(--app-foreground);
+  color: var(--app-bg);
+}
   html {
     @apply font-sans;
   }
@@ -140,4 +162,17 @@
 }
 .cl-cardBox{
   width: 100%;
+}
+@layer utilities {
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
 }

@@ -5,7 +5,7 @@ export default function AdminActions() {
     <div className="space-y-4">
       <h3 className="text-xl font-bold text-white px-2">Admin Tools</h3>
 
-      <div className="p-2 bg-slate-900/80 border border-white/10 rounded-[2.5rem] overflow-hidden">
+      <div className="p-2 bg-app-foreground/80 border border-white/10 rounded-[2.5rem] overflow-hidden">
         {[
           {
             icon: CheckCircle,

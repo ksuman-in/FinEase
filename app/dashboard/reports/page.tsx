@@ -26,7 +26,6 @@ export interface MonthlyReport {
 
 export default async function Report() {
   const allReport = await getMonthlyReport();
-  console.log({ allReport });
   const reports = allReport || [];
   const history = [...reports]?.reverse().slice(1);
 
@@ -40,7 +39,7 @@ export default async function Report() {
 
   if (!data) {
     return (
-      <div className="p-6 bg-slate-950 text-slate-100 min-h-screen font-sans">
+      <div className="p-6 bg-app-foreground text-slate-100 min-h-screen font-sans">
         <h1 className="text-3xl font-bold">No reports available</h1>
         <p className="text-slate-400">
           Financial reports will appear here once generated.
@@ -55,7 +54,7 @@ export default async function Report() {
       : 0;
 
   return (
-    <div className="p-6 bg-slate-950 text-slate-100 min-h-screen font-sans">
+    <div className="p-6 bg-app-foreground text-slate-100 min-h-screen font-sans">
       {/* Header */}
       <div className="flex justify-between items-end mb-8">
         <div>
@@ -105,7 +104,7 @@ export default async function Report() {
       {/* Monthly Flow Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Monthly Activity */}
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6">
+        <div className="lg:col-span-2 bg-app-foreground border border-slate-800 rounded-2xl p-6">
           <h3 className="text-lg font-semibold mb-4">Monthly Activity</h3>
           <div className="space-y-4">
             <ActivityRow
@@ -127,7 +126,7 @@ export default async function Report() {
         </div>
 
         {/* Distributed Assets Snapshot */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+        <div className="bg-app-foreground border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
           <div>
             <h3 className="text-lg font-semibold mb-2">Loan Distribution</h3>
             <p className="text-sm text-slate-400 mb-6">
@@ -146,7 +145,7 @@ export default async function Report() {
                 }}
               />
             </div>
-            <p className="text-xs text-slate-500 mt-4 uppercase tracking-widest">
+            <p className="text-xs text-app-bg0 mt-4 uppercase tracking-widest">
               {distributionPercentage.toFixed(1)}% of Group Value
             </p>
           </div>
@@ -160,10 +159,10 @@ export default async function Report() {
           Previous Reports
         </h2>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <div className="bg-app-foreground border border-slate-800 rounded-xl overflow-hidden">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-slate-800 text-slate-500 text-xs uppercase">
+              <tr className="border-b border-slate-800 text-app-bg0 text-xs uppercase">
                 <th className="p-4 font-medium">Month</th>
                 <th className="p-4 font-medium">Group Value</th>
                 <th className="p-4 font-medium">Cash Flow (Net)</th>
@@ -188,7 +187,7 @@ export default async function Report() {
                     </span>
                   </td>
                   <td className="p-4 text-right">
-                    <button className="text-slate-500 group-hover:text-cyan-400 transition-colors">
+                    <button className="text-app-bg0 group-hover:text-cyan-400 transition-colors">
                       <ChevronRight size={20} />
                     </button>
                   </td>
@@ -217,7 +216,7 @@ const ReportCard = ({
   highlight?: boolean;
 }) => (
   <div
-    className={`p-6 rounded-2xl border ${highlight ? "bg-slate-800 border-slate-700" : "bg-slate-900 border-slate-800"}`}
+    className={`p-6 rounded-2xl border ${highlight ? "bg-slate-800 border-slate-700" : "bg-app-foreground border-slate-800"}`}
   >
     <div className="flex justify-between items-start mb-4">
       <div className="p-2 bg-slate-800 rounded-lg">{icon}</div>
@@ -226,7 +225,7 @@ const ReportCard = ({
       </div>
     </div>
     <h4 className="text-slate-400 text-sm font-medium">{title}</h4>
-    <p className="text-slate-500 text-xs mt-1">{description}</p>
+    <p className="text-app-bg0 text-xs mt-1">{description}</p>
   </div>
 );
 
@@ -239,7 +238,7 @@ const ActivityRow = ({
   value: number;
   type: string;
 }) => (
-  <div className="flex justify-between items-center p-4 bg-slate-950/50 rounded-xl border border-slate-800/50">
+  <div className="flex justify-between items-center p-4 bg-app-foreground/50 rounded-xl border border-slate-800/50">
     <span className="text-slate-300 font-medium">{label}</span>
     <div className="flex items-center gap-2">
       {type === "positive" ? (

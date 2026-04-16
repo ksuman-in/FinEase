@@ -22,7 +22,7 @@ export default function MemberList({
         {members?.map((member: MemberType) => (
           <div
             key={member?.id}
-            className="bg-slate-900/50 backdrop-blur-xl group relative overflow-hidden rounded-[2.5rem] border border-white/10 p-8 transition-all hover:border-cyan-500/30 hover:shadow-2xl hover:shadow-cyan-500/10"
+            className="bg-app-foreground/50 backdrop-blur-xl group relative overflow-hidden rounded-[2.5rem] border border-white/10 p-8 transition-all hover:border-cyan-500/30 hover:shadow-2xl hover:shadow-cyan-500/10"
           >
             {/* Top Glow Decor */}
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 blur-[80px] group-hover:bg-cyan-500/20 transition-all" />
@@ -39,7 +39,7 @@ export default function MemberList({
                   <h3 className="text-xl font-bold text-white truncate group-hover:text-cyan-400 transition-colors">
                     {member.name?.toUpperCase()}
                   </h3>
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
+                  <p className="text-[10px] font-black text-app-bg0 uppercase tracking-widest mt-1">
                     {member.role || "Member"}
                   </p>
                 </div>
@@ -52,7 +52,7 @@ export default function MemberList({
                 {member.email}
               </p>
               {/* Displaying our custom phoneNumber field */}
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-app-bg0">
                 {member.phoneNumber || "No contact linked"}
               </p>
             </div>
