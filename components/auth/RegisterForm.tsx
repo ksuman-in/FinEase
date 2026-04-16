@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   LucideIcon,
 } from "lucide-react";
+import Link from "next/link";
 
 // Standard validation schema
 const registerSchema = z.object({
@@ -148,12 +149,12 @@ const InputField = <T extends FieldValues>({
   register,
 }: InputFieldProps<T>) => (
   <div className="relative group">
-    <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
+    <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-app-bg0 group-focus-within:text-blue-500 transition-colors" />
     <input
       {...register(name)}
       type={type}
       placeholder={placeholder}
-      className={`w-full p-4 pl-12 bg-white/5 border ${error ? "border-red-600/80" : "border-white/10"} rounded-2xl text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-blue-600/80 transition-all`}
+      className={`w-full p-4 pl-12 bg-white/5 border ${error ? "border-red-600/80" : "border-white/10"} rounded-2xl text-white placeholder-app-bg0 outline-none focus:ring-2 focus:ring-blue-600/80 transition-all`}
     />
     {error && <p className="text-red-500 text-xs mt-1.5 ml-2">{error}</p>}
   </div>

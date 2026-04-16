@@ -9,5 +9,5 @@ export async function logoutAction() {
     headers: await headers(),
   });
 
-  redirect("/register");
+  redirect("/login");
 }

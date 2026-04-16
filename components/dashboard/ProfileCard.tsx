@@ -22,7 +22,7 @@ export default function ProfileCard({ user }: MemberCardProps) {
   ];
 
   return (
-    <div className="bg-slate-900/50 border border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-xl">
+    <div className="bg-app-foreground/50 border border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-xl">
       <div className="p-8 border-b border-white/5">
         <h3 className="text-white font-bold">Personal Information</h3>
       </div>
@@ -38,7 +38,7 @@ export default function ProfileCard({ user }: MemberCardProps) {
                 <item.icon className="w-5 h-5 text-slate-400 group-hover:text-blue-400 transition-colors" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                <p className="text-[10px] font-black uppercase tracking-widest text-app-bg0">
                   {item.label}
                 </p>
                 <p className="text-slate-200 font-medium">{item.value}</p>

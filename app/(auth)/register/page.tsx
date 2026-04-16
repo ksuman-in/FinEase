@@ -1,10 +1,10 @@
 import RegisterForm from "@/components/auth/RegisterForm";
-import Navbar from "@/components/layout/Navbar";
-import { HandCoins, Target, TrendingUp, Zap } from "lucide-react";
+import { ArrowRight, HandCoins, Target, TrendingUp, Zap } from "lucide-react";
+import Link from "next/link";
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-app-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           {/* Left Side: Description */}
@@ -42,7 +42,7 @@ export default function RegisterPage() {
                   <f.icon className="w-6 h-6 text-blue-500" />
                   <div>
                     <h4 className="text-white font-bold">{f.title}</h4>
-                    <p className="text-slate-500 text-xs">{f.desc}</p>
+                    <p className="text-app-bg0 text-xs">{f.desc}</p>
                   </div>
                 </div>
               ))}
@@ -52,8 +52,18 @@ export default function RegisterPage() {
           {/* Right Side: Centered Form */}
           <div className="flex justify-center">
             <div className="w-full max-w-md p-1 bg-gradient-to-b from-blue-500/20 to-purple-500/20 rounded-[2.1rem]">
-              <div className="bg-slate-900/90 backdrop-blur-xl p-8 rounded-[2rem] border border-white/5 shadow-2xl">
+              <div className="bg-app-foreground/90 backdrop-blur-xl p-8 rounded-[2rem] border border-white/5 shadow-2xl">
                 <RegisterForm />
+                <div className="mt-8 pt-6 border-t border-white/10 text-center">
+                  <p className="text-app-bg0 text-sm mb-4">Already a member?</p>
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold transition-colors group"
+                  >
+                    Sign In Here
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-app-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           {/* Left Side: Brand Value */}
@@ -36,13 +36,11 @@ export default function LoginPage() {
           {/* Right Side: The Login Card */}
           <div className="flex justify-center order-1 lg:order-2">
             <div className="w-full max-w-md p-[1px] bg-gradient-to-tr from-blue-500/30 via-slate-800 to-purple-500/30 rounded-[2.1rem]">
-              <div className="bg-slate-900/90 backdrop-blur-2xl p-10 rounded-[2rem] shadow-2xl">
+              <div className="bg-app-foreground/90 backdrop-blur-2xl p-10 rounded-[2rem] shadow-2xl">
                 <LoginForm />
 
                 <div className="mt-8 pt-6 border-t border-white/10 text-center">
-                  <p className="text-slate-500 text-sm mb-4">
-                    New to the group?
-                  </p>
+                  <p className="text-app-bg0 text-sm mb-4">New to the group?</p>
                   <Link
                     href="/register"
                     className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold transition-colors group"

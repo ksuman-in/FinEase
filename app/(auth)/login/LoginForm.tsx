@@ -53,13 +53,13 @@ export default function LoginForm() {
         <h1 className="text-3xl font-black text-white tracking-tighter">
           Login
         </h1>
-        <p className="text-slate-500 text-sm">Access your FinEase portal</p>
+        <p className="text-app-bg0 text-sm">Access your FinEase portal</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Email */}
         <div className="relative group">
-          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
+          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-app-bg0 group-focus-within:text-blue-500 transition-colors" />
           <input
             {...register("email")}
             type="email"
@@ -75,7 +75,7 @@ export default function LoginForm() {
 
         {/* Password */}
         <div className="relative group">
-          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
+          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-app-bg0 group-focus-within:text-blue-500 transition-colors" />
           <input
             {...register("password")}
             type="password"

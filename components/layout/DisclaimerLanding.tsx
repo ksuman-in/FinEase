@@ -37,7 +37,7 @@ export default function DisclaimerLanding() {
             Legal Disclaimer
           </h3>
 
-          <ul className="space-y-3 text-sm text-slate-500">
+          <ul className="space-y-3 text-sm text-app-bg0">
             <li>
               • This application is for group financial tracking purposes only.
             </li>

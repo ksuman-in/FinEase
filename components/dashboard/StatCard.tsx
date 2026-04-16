@@ -1,21 +1,29 @@
-export default function StatCard({
-  title,
-  value,
-  description,
-}: {
-  title: string;
-  value: string;
-  description: string;
-}) {
+import { IndianRupee } from "lucide-react";
+
+export default function StatCard({ label, amount, trend, color }: any) {
+  const colorMap: any = {
+    emerald: "text-emerald-500 bg-emerald-500/10",
+    rose: "text-rose-500 bg-rose-500/10",
+    blue: "text-blue-500 bg-blue-500/10",
+    violet: "text-violet-500 bg-violet-500/10",
+  };
+
   return (
-    <div className="p-8 bg-slate-900/50 border border-white/10 rounded-[2rem] backdrop-blur-xl hover:border-blue-500/30 transition-all group">
-      <p className="text-slate-500 text-sm font-bold uppercase tracking-widest mb-2">
-        {title}
+    <div className="group p-8 bg-white/5 border border-white/10 rounded-[2.5rem] hover:bg-white/[0.07] transition-all duration-500">
+      <div className="flex justify-between items-start mb-4">
+        <div className={`p-2 rounded-xl ${colorMap[color]}`}>
+          <IndianRupee size={16} />
+        </div>
+        <span
+          className={`text-[10px] font-black px-2 py-1 rounded-lg ${colorMap[color]}`}
+        >
+          {trend}
+        </span>
+      </div>
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-app-bg0 mb-1">
+        {label}
       </p>
-      <h2 className="text-3xl font-black text-white group-hover:text-blue-400 transition-colors">
-        {value}
-      </h2>
-      <p className="text-slate-400 text-xs mt-4">{description}</p>
+      <h4 className="text-2xl font-mono font-black text-white">₹{amount}</h4>
     </div>
   );
 }

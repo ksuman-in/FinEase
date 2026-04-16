@@ -12,7 +12,7 @@ export default async function ProfilePage() {
         <h1 className="text-4xl font-black tracking-tighter text-white">
           Account
         </h1>
-        <p className="text-slate-500">
+        <p className="text-app-bg0">
           Manage your identity and security settings.
         </p>
       </header>
