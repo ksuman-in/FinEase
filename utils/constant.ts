@@ -5,6 +5,11 @@ export const transactionType = {
   NEW_LOAN: "NEW_LOAN",
 };
 
+export const generatInformations = {
+  monthlyContribution: 1000,
+  minPrincipalPayment: 10000,
+};
+
 export const MONTHS = [
   "Jan",
   "Feb",

@@ -10,6 +10,8 @@ enum LoanStatus {
   ACTIVE
   PAID
   DEFAULTED
+  CLOSED
+  REQUEST
 }
 
 enum TransactionType {
@@ -17,6 +19,7 @@ enum TransactionType {
   INT_PAID
   PRIN_REPAY
   NEW_LOAN
+  TOP_UP
 }
 
 // --- Better Auth & Core Business Models ---

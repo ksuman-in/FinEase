@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowUpRight, ArrowDownLeft, ReceiptText } from "lucide-react";
-import Link from "next/link";
 
 interface SimpleTransaction {
   id: string;
@@ -71,7 +70,11 @@ export default function TransactionListSnippet({
               <p
                 className={`text-sm font-mono font-black ${isEntry ? "text-emerald-400" : "text-white"}`}
               >
-                {isEntry ? "+" : ""}₹{tx.amount.toLocaleString()}
+                {isEntry ? "+" : ""}
+                {tx.amount.toLocaleString("en-IN", {
+                  currency: "INR",
+                  minimumFractionDigits: 2,
+                })}
               </p>
             </div>
           </div>
