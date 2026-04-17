@@ -5,7 +5,12 @@ import { Drawer } from "vaul";
 import { Menu, X } from "lucide-react";
 import Sidebar from "./Sidebar";
 
-export default function MobileNav() {
+interface MobileNavProps {
+  user: { role: string | null };
+  pendingCount?: number;
+}
+
+export default function MobileNav({ user, pendingCount }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -36,7 +41,11 @@ export default function MobileNav() {
           </div>
 
           <div className="flex-1 overflow-y-auto pt-4">
-            <Sidebar closeSidebar={() => setOpen(false)} />
+            <Sidebar
+              pendingCount={pendingCount}
+              user={user}
+              closeSidebar={() => setOpen(false)}
+            />
           </div>
         </Drawer.Content>
       </Drawer.Portal>

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { saveTransactionAction } from "@/lib/actions/transactions";
 import { useState } from "react";
 import { SaveTransactionFormTypes } from "@/utils/types";
+import { X } from "lucide-react";
 
 interface Users {
   id: string;
@@ -18,12 +19,15 @@ export default function TransactionUpdateDrawer({
   label,
   isAdmin,
   users,
+  isActiveLoan,
 }: {
   isPaymentPending: boolean;
   label: string;
   isAdmin: boolean;
   users: Users[];
+  isActiveLoan: boolean;
 }) {
+  const isActiveOrAdmin = isActiveLoan || isAdmin;
   const [open, setOpen] = useState(isPaymentPending || false);
   const initialData = {
     type: "CONTRIB",
@@ -75,6 +79,12 @@ export default function TransactionUpdateDrawer({
           <div className="p-10 space-y-10 overflow-y-auto">
             {/* Context Header */}
             <div>
+              <button
+                onClick={() => setOpen(false)}
+                className="absolute right-6 top-6 p-2 rounded-full bg-slate-100 text-slate-500 active:bg-slate-200 transition-colors"
+              >
+                <X size={20} strokeWidth={2.5} />
+              </button>
               <h3 className="text-2xl font-black text-slate-900 tracking-tighter uppercase">
                 Update <span className="text-blue-600">Transaction</span>
               </h3>
@@ -125,10 +135,15 @@ export default function TransactionUpdateDrawer({
                 <select
                   {...register("type")}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-900 outline-none appearance-none cursor-pointer"
+                  disabled={!isActiveLoan && !isAdmin}
                 >
                   <option value="CONTRIB">Contribution</option>
-                  <option value="BOTH">Interest + Contribution</option>
-                  <option value="PRIN_REPAY">Principal Repayment</option>
+                  {(isActiveLoan || isAdmin) && (
+                    <>
+                      <option value="BOTH">Interest + Contribution</option>
+                      <option value="PRIN_REPAY">Principal Repayment</option>
+                    </>
+                  )}
                 </select>
               </div>
 

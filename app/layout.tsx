@@ -1,5 +1,13 @@
 import "./globals.css";
 
+export const metadata = {
+  title: "FinEase | Secure Ledger Sync",
+  description: "Your journey to 1 Crore starts here.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
 export default async function RootLayout({
   children,
 }: {
