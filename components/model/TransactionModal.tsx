@@ -40,7 +40,7 @@ const MODAL_CONFIG = {
     title: "Request Capital",
     subtitle: "Instant group-pool access",
     icon: <HandCoins size={24} />,
-    color: "blue",
+    badge: "bg-blue-50 text-blue-600",
     cta: "Confirm Loan",
     note: "Interest is charged on the 1st. Principal repayments are flexible.",
   },
@@ -48,7 +48,7 @@ const MODAL_CONFIG = {
     title: "Monthly Contribution",
     subtitle: "Grow the Power 10 pool",
     icon: <IndianRupee size={24} />,
-    color: "emerald",
+    badge: "bg-emerald-50 text-emerald-600",
     cta: "Deposit Funds",
     note: "Your contribution directly increases your equity in the 1 Crore goal.",
   },
@@ -56,7 +56,7 @@ const MODAL_CONFIG = {
     title: "Principal Repayment",
     subtitle: "Lower your monthly interest",
     icon: <CreditCard size={24} />,
-    color: "indigo",
+    badge: "bg-indigo-50 text-indigo-600",
     cta: "Pay Principal",
     note: "Reducing balance enabled. Every rupee paid reduces next month's interest.",
   },
@@ -201,10 +201,9 @@ export default function TransactionModal({
               </button>
             </div>
           )}
-          {/* Dynamic Header */}
           <div className="p-8 pb-4 flex items-center gap-4">
             <div
-              className={`w-14 h-14 rounded-2xl bg-${config.color}-50 text-${config.color}-600 flex items-center justify-center`}
+              className={`w-14 h-14 rounded-2xl ${config.badge} flex items-center justify-center`}
             >
               {config.icon}
             </div>

@@ -3,7 +3,8 @@ export default function LogoIcon({ size = 16 }: { size?: number }) {
   // size determines the height in tailwind units (h-16 is 64px)
   return (
     <div
-      className={`relative flex items-center justify-center h-${size} w-${size} bg-white border border-slate-200 rounded-[2rem] shadow-lg shadow-blue-500/5 overflow-hidden group hover:scale-105 transition-all duration-300`}
+      style={{ height: `${size * 4}px`, width: `${size * 4}px` }}
+      className="relative flex items-center justify-center bg-white border border-slate-200 rounded-[2rem] shadow-lg shadow-blue-500/5 overflow-hidden group hover:scale-105 transition-all duration-300"
     >
       {/* 1. Glassy Inner Glow */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

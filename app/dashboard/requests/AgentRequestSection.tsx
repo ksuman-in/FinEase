@@ -3,7 +3,7 @@
 import { approveLoanAction } from "@/lib/actions/agent/approveLoanAction";
 import { Check, User, X } from "lucide-react";
 
-type RequestTyep = {
+type RequestType = {
   id: string;
   user: { name: string };
   issuedAt: Date;
@@ -13,7 +13,7 @@ type RequestTyep = {
 export default function AgentRequestSection({
   requests,
 }: {
-  requests: RequestTyep[];
+  requests: RequestType[];
 }) {
   // If no requests, show a "Fantastic" empty state
   if (requests.length === 0) {
@@ -36,7 +36,7 @@ export default function AgentRequestSection({
       </div>
 
       <div className="grid gap-4">
-        {requests.map((request: RequestTyep) => (
+        {requests.map((request: RequestType) => (
           <div
             key={request.id}
             className="group relative p-6 bg-white border border-slate-100 rounded-[2rem] hover:shadow-xl hover:shadow-slate-200/50 transition-all"
@@ -72,7 +72,7 @@ export default function AgentRequestSection({
                   <X size={16} /> Reject
                 </button>
                 <button
-                  onClick={() => approveLoanAction(request.id)}
+                  onClick={async () => await approveLoanAction(request.id)}
                   className="flex-1 md:flex-none px-6 py-3 rounded-xl bg-slate-900 text-white hover:bg-blue-600 font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-900/20"
                 >
                   <Check size={16} /> Approve

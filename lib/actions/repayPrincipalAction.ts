@@ -18,53 +18,53 @@ export async function repayPrincipalAction({
     const session = await authGuard();
     const userId = session.user.id;
 
-    const activeLoan = await prisma.memberLoan.findUnique({
-      where: { id: loanId },
-      include: {
-        transactions: {
-          where: { type: TransactionType.PRIN_REPAY },
-        },
-      },
-    });
-
-    if (
-      !activeLoan ||
-      activeLoan.userId !== userId ||
-      activeLoan.status !== LoanStatus.ACTIVE
-    ) {
-      throw new Error("Active loan not found.");
-    }
-
-    const totalRepaid = activeLoan.transactions.reduce(
-      (sum, tx) => sum + tx.amount,
-      0,
-    );
-    const remaining = activeLoan.amount - totalRepaid;
-
-    if (amount > remaining) {
-      throw new Error(`Repayment exceeds remaining principal (₹${remaining}).`);
-    }
-
-    const result = await prisma.memberTransaction.create({
-      data: {
-        userId,
-        loanId,
-        amount,
-        type: TransactionType.PRIN_REPAY,
-        description: description || "Principal Repayment",
-      },
-    });
-
-    if (amount === remaining) {
-      await prisma.memberLoan.update({
+    const result = await prisma.$transaction(async (tx) => {
+      const activeLoan = await tx.memberLoan.findUnique({
         where: { id: loanId },
-        data: { status: LoanStatus.CLOSED },
+        include: {
+          transactions: { where: { type: TransactionType.PRIN_REPAY } },
+        },
       });
-    }
+      if (
+        !activeLoan ||
+        activeLoan.userId !== userId ||
+        activeLoan.status !== LoanStatus.ACTIVE
+      ) {
+        throw new Error("Active loan not found.");
+      }
+      const totalRepaid = activeLoan.transactions.reduce(
+        (s, t) => s + t.amount,
+        0,
+      );
+      const remaining = activeLoan.amount - totalRepaid;
+      if (amount > remaining) {
+        throw new Error(
+          `Repayment exceeds remaining principal (₹${remaining}).`,
+        );
+      }
+      const created = await tx.memberTransaction.create({
+        data: {
+          userId,
+          loanId,
+          amount,
+          type: TransactionType.PRIN_REPAY,
+          description: description || "Principal Repayment",
+        },
+      });
+      if (Math.abs(remaining - amount) < 0.01) {
+        await tx.memberLoan.update({
+          where: { id: loanId },
+          data: { status: LoanStatus.CLOSED },
+        });
+      }
+      return created;
+    });
 
     revalidatePath("/dashboard");
     return { success: true, data: result };
   } catch (err) {
-    return { error: err || "An unexpected error occurred" };
+    const message =
+      err instanceof Error ? err.message : "An unexpected error occurred";
+    return { error: message };
   }
 }

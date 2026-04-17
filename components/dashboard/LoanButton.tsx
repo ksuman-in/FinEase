@@ -91,15 +91,15 @@ export default function LoanButton({
 
       {/* Principal Button: Only 1st-10th */}
       <button
-        disabled={isPrincipalWindow}
+        disabled={!isPrincipalWindow}
         className={`flex-1 h-14 rounded-2xl font-black transition-all ${
-          !isPrincipalWindow
+          isPrincipalWindow
             ? "bg-white text-slate-950 cursor-pointer"
             : "bg-white/5 text-slate-500 border border-white/5 cursor-not-allowed"
         }`}
         onClick={() => openContributionModal(TransactionType.PRIN_REPAY)}
       >
-        {!isPrincipalWindow ? "Pay Principal" : "Principal Window Closed"}
+        {isPrincipalWindow ? "Pay Principal" : "Principal Window Closed"}
       </button>
       <TransactionModal
         isOpen={isOpenModal}
