@@ -83,6 +83,16 @@ export default function Sidebar({
         })}
       </div>
 
+      <Link
+        href="/admin"
+        className="fixed top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-full shadow-2xl hover:bg-blue-600 transition-all active:scale-95"
+      >
+        <ShieldCheck size={14} className="text-blue-400" />
+        <span className="text-[10px] font-black uppercase tracking-widest">
+          Return to Admin
+        </span>
+      </Link>
+
       <button
         onClick={handleLogout}
         className="flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold text-rose-500 hover:bg-rose-500/10 transition-all"

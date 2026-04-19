@@ -11,7 +11,7 @@ export async function settleMonthlyPaymentAction({
   contributionAmount,
   description,
 }: {
-  loanId: string;
+  loanId?: string;
   interestAmount: number;
   contributionAmount: number;
   description: string;
@@ -19,9 +19,11 @@ export async function settleMonthlyPaymentAction({
   const session = await authGuard();
   const userId = session.user.id;
 
+  if (!userId) throw new Error("Unauthorized");
+
   const operations = [];
 
-  if (interestAmount > 0) {
+  if (interestAmount > 0 && loanId) {
     operations.push(
       prisma.memberTransaction.create({
         data: {

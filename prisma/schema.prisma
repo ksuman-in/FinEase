@@ -12,6 +12,7 @@ enum LoanStatus {
   DEFAULTED
   CLOSED
   REQUEST
+  CANCELLED
 }
 
 enum TransactionType {
@@ -56,6 +57,7 @@ model MemberLoan {
   interestRate Float      @default(1.0)
   status       LoanStatus @default(ACTIVE)
   issuedAt     DateTime   @default(now())
+  description  String?
 
   // Relations
   user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)

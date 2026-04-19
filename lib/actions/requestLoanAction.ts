@@ -3,48 +3,43 @@
 import { revalidatePath } from "next/cache";
 import { authGuard } from "../auth-utils";
 import { prisma } from "../db";
+import { LoanStatus } from "@prisma/client";
 
-export default async function requestLoanAction(amount: number) {
+export default async function requestLoanAction({
+  amount,
+  description,
+}: {
+  amount: number;
+  description: string;
+}) {
   const session = await authGuard();
   const userId = session.user.id;
 
-  if (!session?.user) throw new Error("Unauthorized");
+  const settings = await prisma.globalSettings.findFirst();
 
-  const activeLoan = await prisma.memberLoan.findFirst({
-    where: { userId, status: "ACTIVE" },
-  });
+  const interestRate = parseFloat(
+    String(settings?.memberInterestRate ? settings.memberInterestRate / 12 : 1),
+  );
+
+  if (!userId) throw new Error("Unauthorized");
+
   const floatAmount = parseFloat(`${amount}`);
   try {
-    if (activeLoan) {
-      await prisma.$transaction([
-        prisma.memberLoan.update({
-          where: { id: activeLoan.id },
-          data: { amount: { increment: floatAmount } },
-        }),
-        prisma.memberTransaction.create({
-          data: {
-            userId,
-            loanId: activeLoan.id,
-            amount: floatAmount,
-            type: "TOP_UP",
-            description: `Top-up of ₹${amount.toLocaleString("en-IN")}`,
-          },
-        }),
-      ]);
-    } else {
-      await prisma.memberLoan.create({
-        data: {
-          userId,
-          amount: floatAmount,
-          interestRate: 1.0,
-          status: "REQUEST",
-        },
-      });
-    }
+    await prisma.memberLoan.create({
+      data: {
+        userId,
+        amount: floatAmount,
+        interestRate: interestRate,
+        status: LoanStatus.REQUEST,
+        description: `New Request at (${new Date().toLocaleString("default", { month: "long", year: "2-digit" })}) ${description}`,
+      },
+    });
 
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    return { success: false, error: "Failed to process loan request" };
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to process loan request";
+    return { success: false, error: errorMessage };
   }
 }

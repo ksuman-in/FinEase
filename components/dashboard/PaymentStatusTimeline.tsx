@@ -1,27 +1,33 @@
+import { getOrdinal } from "@/lib/utils/helper";
+import { configTimeline } from "@/utils/constant";
 import { Lock, Unlock, Zap, ShieldCheck } from "lucide-react";
 
-interface TimelineProps {
-  mockDay?: number;
-}
-
-export function PaymentStatusTimeline({ mockDay }: TimelineProps) {
-  const day = mockDay ?? new Date().getDate();
+export function PaymentStatusTimeline({
+  isActiveLoan,
+}: {
+  isActiveLoan: boolean;
+}) {
+  const day = new Date().getDate();
+  const interestStart = configTimeline.INTEREST.start;
+  const interestEnd = configTimeline.INTEREST.end;
+  const principalStart = configTimeline.PRINCIPAL.start;
+  const principalEnd = configTimeline.PRINCIPAL.end;
 
   const windows = [
     {
-      label: "Interest Window",
-      range: "1st — 5th",
-      start: 1,
-      end: 5,
+      label: "Interest/Contribution Window",
+      range: `${getOrdinal(interestStart)} — ${getOrdinal(interestEnd)}`,
+      start: interestStart,
+      end: interestEnd,
       accent: "blue",
       icon: <Zap size={14} />,
       shadow: "shadow-blue-200/40",
     },
     {
       label: "Principal Window",
-      range: "1st — 10th",
-      start: 1,
-      end: 10,
+      range: `${getOrdinal(principalStart)} — ${getOrdinal(principalEnd)}`,
+      start: principalStart,
+      end: principalEnd,
       accent: "emerald",
       icon: <ShieldCheck size={14} />,
       shadow: "shadow-emerald-200/40",
@@ -31,8 +37,7 @@ export function PaymentStatusTimeline({ mockDay }: TimelineProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
       {windows.map((win) => {
-        // NEW DYNAMIC LOGIC
-        const isOpen = day >= win.start && day <= win.end;
+        const isOpen = isActiveLoan && day >= win.start && day <= win.end;
         const isFuture = day < win.start;
         const isPast = day > win.end;
 
@@ -48,10 +53,10 @@ export function PaymentStatusTimeline({ mockDay }: TimelineProps) {
         return (
           <div
             key={win.label}
-            className={`
-              relative p-6 rounded-[2.5rem] transition-all duration-700
-              bg-white/40 backdrop-blur-2xl border border-white/80
-              ${isOpen ? `shadow-2xl ${win.shadow}` : "opacity-60 grayscale-[0.8] shadow-sm"}
+            className={`bg-amber-50 border border-amber-100 p-6 rounded-[2rem]
+              relative  transition-all duration-700
+               backdrop-blur-2xl 
+              ${isOpen ? `shadow-2xl ${win.shadow}` : "opacity-90 grayscale-[0.8] shadow-sm"}
             `}
           >
             <div className="flex justify-between items-start mb-6">

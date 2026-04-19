@@ -6,7 +6,6 @@ import { authGuard } from "@/lib/auth-utils";
 export default async function RequestsPage() {
   const session = await authGuard();
 
-  // 1. Security Check
   const user = await prisma.user.findUnique({
     where: { id: session?.user?.id },
     select: { role: true },
@@ -16,13 +15,19 @@ export default async function RequestsPage() {
     redirect("/dashboard");
   }
 
-  // 2. Fetch Data
   const requests = await prisma.memberLoan.findMany({
     where: { status: "REQUEST" },
-    include: { user: true },
+    include: {
+      user: {
+        include: {
+          loans: {
+            where: { status: "ACTIVE" },
+          },
+        },
+      },
+    },
     orderBy: { issuedAt: "desc" },
   });
-
   return (
     <main className="p-8 space-y-8">
       <header className="flex justify-between items-end">
@@ -39,7 +44,6 @@ export default async function RequestsPage() {
         </div>
       </header>
 
-      {/* The UI we built earlier */}
       <AgentRequestSection requests={requests} />
     </main>
   );
