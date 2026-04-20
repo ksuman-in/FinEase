@@ -25,7 +25,12 @@ export default async function PageHeader({ action = "" }: { action?: string }) {
 
         <div className="flex items-center gap-4">
           {action}
-          <div className="w-8 h-8 rounded-full bg-blue-600 md:w-10 md:h-10" />
+          <div
+            className="w-8 h-8 flex justify-center items-center rounded-full bg-blue-600 md:w-10 md:h-10"
+            aria-label={user.name}
+          >
+            <span className="text-2xl">{user.name.at(0)}</span>
+          </div>
         </div>
       </div>
     </header>

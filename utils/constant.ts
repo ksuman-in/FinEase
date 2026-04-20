@@ -24,3 +24,14 @@ export const MONTHS = [
   "Nov",
   "Dec",
 ];
+
+export const configTimeline = {
+  INTEREST: {
+    start: 20,
+    end: 25,
+  },
+  PRINCIPAL: {
+    start: 20,
+    end: 25,
+  },
+};

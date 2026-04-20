@@ -81,6 +81,20 @@ export default function Sidebar({
             </Link>
           );
         })}
+        {isAdmin && (
+          <Link
+            href="/admin"
+            {...(closeSidebar && { onClick: closeSidebar })}
+            className={
+              "flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all group text-app-bg hover:bg-white/5 hover:text-slate-200"
+            }
+          >
+            <div className="flex items-center gap-3">
+              <ShieldCheck size={18} className="group-hover:text-blue-400" />
+              <span className="font-bold uppercase">Return to Admin</span>
+            </div>
+          </Link>
+        )}
       </div>
 
       <button

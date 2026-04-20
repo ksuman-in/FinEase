@@ -119,7 +119,7 @@ export default function DisclaimerLanding() {
         <div className="opacity-30 grayscale scale-75">
           <Logo showIcon={false} />
         </div>
-        <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.5em]">
+        <p className="text-[10px] font-bold text-slate-600 uppercase ">
           &copy; 2026 FinEase Internal Internal Use Only
         </p>
       </footer>

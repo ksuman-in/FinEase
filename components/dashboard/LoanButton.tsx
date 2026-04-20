@@ -4,9 +4,11 @@ import { useState } from "react";
 import TransactionModal from "../model/TransactionModal";
 import { TransactionType } from "@prisma/client";
 import { settleMonthlyPaymentAction } from "@/lib/actions/settleMonthlyPaymentAction";
-import { getPaymentWindowStatus } from "@/lib/utils/date-logic";
 import { generatInformations } from "@/utils/constant";
 import { repayPrincipalAction } from "@/lib/actions/repayPrincipalAction";
+import { getPaymentWindowStatus } from "@/lib/utils/helper";
+import { Plus } from "lucide-react";
+import { requestTopUpAction } from "@/lib/actions/requestTopUpAction";
 
 interface LoanProps {
   id: string;
@@ -16,7 +18,7 @@ interface LoanProps {
   transactions: { amount: number }[];
 }
 
-type TransactionMode = "NEW_LOAN" | "CONTRIB" | "PRIN_REPAY";
+type TransactionMode = "TOP_UP" | "CONTRIB" | "PRIN_REPAY";
 
 export default function LoanButton({
   loanId,
@@ -71,36 +73,53 @@ export default function LoanButton({
       });
       return response as { success?: boolean; error?: string };
     }
+    if (mode === TransactionType.TOP_UP) {
+      const response = await requestTopUpAction({
+        amount,
+        description,
+      });
+      return response as { success?: boolean; error?: string };
+    }
   };
   return (
-    <div className="flex gap-4 mt-8">
-      {/* Interest Button: Only 1st-5th */}
+    <div className="flex flex-col gap-4 mt-8">
+      <div className="flex gap-4">
+        {/* INTEREST BUTTON */}
+        <button
+          disabled={!isInterestWindow}
+          className={`flex-1 h-14 rounded-2xl font-black transition-all text-xs uppercase tracking-widest ${
+            isInterestWindow
+              ? "bg-white text-blue-600 border-2 border-blue-600 cursor-pointer hover:bg-blue-600 hover:text-white active:scale-95"
+              : "bg-slate-50 text-slate-400 border border-slate-100 cursor-not-allowed"
+          }`}
+          onClick={() => openContributionModal(TransactionType.CONTRIB)}
+        >
+          {isInterestWindow ? "Pay Interest" : "Window Closed"}
+        </button>
+
+        {/* PRINCIPAL BUTTON */}
+        <button
+          disabled={!isPrincipalWindow}
+          className={`flex-1 h-14 rounded-2xl font-black transition-all text-xs uppercase tracking-widest ${
+            isPrincipalWindow
+              ? "bg-white text-slate-900 border-2 border-slate-900 cursor-pointer hover:bg-slate-900 hover:text-white active:scale-95"
+              : "bg-slate-50 text-slate-400 border border-slate-100 cursor-not-allowed"
+          }`}
+          onClick={() => openContributionModal(TransactionType.PRIN_REPAY)}
+        >
+          {isPrincipalWindow ? "Pay Principal" : "Window Closed"}
+        </button>
+      </div>
+
+      {/* TOP-UP BUTTON */}
       <button
-        disabled={!isInterestWindow}
-        className={`flex-1 h-14 rounded-2xl font-black transition-all ${
-          isInterestWindow
-            ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20 cursor-pointer"
-            : "bg-white/5 text-slate-500 border border-white/5 cursor-not-allowed"
-        }`}
-        onClick={() => openContributionModal(TransactionType.CONTRIB)}
+        onClick={() => openContributionModal(TransactionType.TOP_UP)}
+        className="w-full h-14 bg-slate-900 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-600 transition-all shadow-xl shadow-slate-200 active:scale-[0.98] text-xs uppercase tracking-widest"
       >
-        {isInterestWindow
-          ? "Pay Interest/Contribution"
-          : "Interest/Contribution Window Closed"}
+        <Plus className="w-5 h-5 text-white" />
+        Request Loan Top-up
       </button>
 
-      {/* Principal Button: Only 1st-10th */}
-      <button
-        disabled={!isPrincipalWindow}
-        className={`flex-1 h-14 rounded-2xl font-black transition-all ${
-          isPrincipalWindow
-            ? "bg-white text-slate-950 cursor-pointer"
-            : "bg-white/5 text-slate-500 border border-white/5 cursor-not-allowed"
-        }`}
-        onClick={() => openContributionModal(TransactionType.PRIN_REPAY)}
-      >
-        {isPrincipalWindow ? "Pay Principal" : "Principal Window Closed"}
-      </button>
       <TransactionModal
         isOpen={isOpenModal}
         onClose={() => openLoanModal(false)}

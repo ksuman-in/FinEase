@@ -15,7 +15,7 @@ import { TransactionType } from "@prisma/client";
 import { formatCurrency } from "@/lib/utils/date-logic";
 import { generatInformations, transactionType } from "@/utils/constant";
 
-type TransactionMode = "NEW_LOAN" | "CONTRIB" | "PRIN_REPAY";
+type TransactionMode = "TOP_UP" | "CONTRIB" | "PRIN_REPAY" | "NEW_LOAN";
 
 interface ModalProps {
   isOpen: boolean;
@@ -36,6 +36,14 @@ interface ModalProps {
 }
 
 const MODAL_CONFIG = {
+  TOP_UP: {
+    title: "Request Capital",
+    subtitle: "Instant group-pool access",
+    icon: <HandCoins size={24} />,
+    badge: "bg-blue-50 text-blue-600",
+    cta: "Confirm Topup",
+    note: "Interest is charged on the 1st. Principal repayments are flexible.",
+  },
   NEW_LOAN: {
     title: "Request Capital",
     subtitle: "Instant group-pool access",
@@ -94,6 +102,8 @@ export default function TransactionModal({
   ) {
     minValue = remainingPrincipal;
   }
+
+  minValue = +parseFloat(String(minValue)).toFixed(0);
 
   const {
     handleSubmit,
@@ -314,7 +324,7 @@ export default function TransactionModal({
             <button
               type="submit"
               disabled={amount <= 0 || isSubmitting}
-              className={`flex-1 h-16 bg-slate-900 hover:bg-black text-white font-black rounded-[1.5rem] shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer`}
+              className={`flex-1 h-16 bg-slate-900 hover:bg-blue-600 text-white font-black rounded-[1.5rem] shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer`}
             >
               {isSubmitting ? (
                 <Loader2 className="animate-spin" />
