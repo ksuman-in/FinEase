@@ -15,6 +15,13 @@ export async function requestTopUpAction({
   const session = await authGuard();
   if (!session?.user) throw new Error("Unauthorized");
 
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return {
+      success: false,
+      error: "Top-up amount must be greater than zero.",
+    };
+  }
+
   const activeLoan = await prisma.memberLoan.findFirst({
     where: {
       userId: session.user.id,
@@ -24,6 +31,21 @@ export async function requestTopUpAction({
 
   if (!activeLoan) {
     throw new Error("No active loan found to top up.");
+  }
+
+  const existingPendingRequest = await prisma.memberLoan.findFirst({
+    where: {
+      userId: session.user.id,
+      status: LoanStatus.REQUEST,
+    },
+    select: { id: true },
+  });
+
+  if (existingPendingRequest) {
+    return {
+      success: false,
+      error: "A loan request is already pending approval.",
+    };
   }
 
   await prisma.memberLoan.create({

@@ -1,10 +1,20 @@
 "use server";
 
+import { authGuard } from "@/lib/auth-utils";
 import { prisma } from "@/lib/db";
 import { LoanStatus, TransactionType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function processLoanAction(loanId: string, action: LoanStatus) {
+  const session = await authGuard();
+  if (session.user?.role !== "admin") {
+    throw new Error("Forbidden");
+  }
+
+  if (action !== LoanStatus.ACTIVE && action !== LoanStatus.CANCELLED) {
+    throw new Error("Invalid action");
+  }
+
   const request = await prisma.memberLoan.findUnique({
     where: { id: loanId },
   });

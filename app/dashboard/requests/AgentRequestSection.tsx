@@ -95,10 +95,10 @@ export default function AdminPendingRequests({
                 </p>
               </div>
 
-              {/* Actions Section */}
               <div className="flex gap-3">
-                {/* CANCEL BUTTON */}
                 <button
+                  type="button"
+                  aria-label={`Cancel request for ${request.user.name}`}
                   disabled={isAnyLoading}
                   onClick={() => handleAction(request.id, LoanStatus.CANCELLED)}
                   className={`w-12 h-12 flex items-center justify-center rounded-2xl border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
@@ -114,7 +114,6 @@ export default function AdminPendingRequests({
                   )}
                 </button>
 
-                {/* APPROVE BUTTON */}
                 <button
                   disabled={isAnyLoading}
                   onClick={() => handleAction(request.id, LoanStatus.ACTIVE)}

@@ -15,15 +15,18 @@ export default async function requestLoanAction({
   const session = await authGuard();
   const userId = session.user.id;
 
+  if (!userId) throw new Error("Unauthorized");
+  const floatAmount = parseFloat(`${amount}`);
+  if (!Number.isFinite(floatAmount) || floatAmount <= 0) {
+    return { success: false, error: "Invalid loan amount" };
+  }
+
   const settings = await prisma.globalSettings.findFirst();
 
   const interestRate = parseFloat(
     String(settings?.memberInterestRate ? settings.memberInterestRate / 12 : 1),
   );
 
-  if (!userId) throw new Error("Unauthorized");
-
-  const floatAmount = parseFloat(`${amount}`);
   try {
     await prisma.memberLoan.create({
       data: {

@@ -19,7 +19,7 @@ export default async function DashboardPage() {
     ? await prisma.memberLoan.findFirst({
         where: {
           userId: session.user.id,
-          status: { in: [LoanStatus.REQUEST, LoanStatus.CANCELLED] },
+          status: LoanStatus.REQUEST,
         },
         orderBy: { issuedAt: "desc" },
       })

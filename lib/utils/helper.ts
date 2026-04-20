@@ -17,8 +17,14 @@ export function getOrdinal(n: number) {
   return `${n}${suffix}`;
 }
 
-export const getPaymentWindowStatus = () => {
-  const day = new Date().getDate();
+export const getPaymentWindowStatus = (now = new Date()) => {
+  const day = Number(
+    new Intl.DateTimeFormat("en-US", {
+      day: "numeric",
+      timeZone: "Asia/Kolkata",
+    }).format(now),
+  );
+  // const day = new Date().getDate();
   return {
     isInterestWindow:
       day >= configTimeline.INTEREST.start &&
