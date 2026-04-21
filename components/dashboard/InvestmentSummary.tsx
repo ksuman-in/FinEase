@@ -1,6 +1,6 @@
 import { authGuard } from "@/lib/auth-utils";
 import { prisma } from "@/lib/db";
-import { formatCurrency } from "@/lib/utils/date-logic";
+import { addYearMonthDay, formatCurrency } from "@/lib/utils/date-logic";
 import { generatInformations } from "@/utils/constant";
 import { TransactionType } from "@prisma/client";
 import { TrendingUp, Target, Calendar, ShieldCheck } from "lucide-react";
@@ -9,13 +9,7 @@ export async function InvestmentSummary() {
   const session = await authGuard();
   const userId = session.user.id;
 
-  // Calculate Next Month for Review
-  const nextMonthDate = new Date();
-  nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
-  const nextReview = nextMonthDate.toLocaleString("default", {
-    month: "long",
-    year: "numeric",
-  });
+  const nextReview = addYearMonthDay({ month: 1 });
 
   const summary = await prisma.memberTransaction.aggregate({
     where: {

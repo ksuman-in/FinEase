@@ -24,7 +24,7 @@ export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
     adapter, // The modern adapter handles the pool internally
-    log: ["query", "error", "warn"],
+    log: ["query", "info", "warn", "error"],
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

@@ -17,6 +17,7 @@ export async function repayPrincipalAction({
   try {
     const session = await authGuard();
     const userId = session.user.id;
+    const groupId = session.user.groupId;
 
     const result = await prisma.$transaction(async (tx) => {
       const activeLoan = await tx.memberLoan.findUnique({
@@ -46,6 +47,7 @@ export async function repayPrincipalAction({
         data: {
           userId,
           loanId,
+          groupId,
           amount,
           type: TransactionType.PRIN_REPAY,
           description: description || "Principal Repayment",

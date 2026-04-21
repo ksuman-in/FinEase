@@ -32,7 +32,7 @@ export default function LoginForm() {
     setLoading(true);
     setError(null);
 
-    const { data, error: authError } = await authClient.signIn.email({
+    const { error: authError } = await authClient.signIn.email({
       email: values.email,
       password: values.password,
       callbackURL: "/",
@@ -43,7 +43,7 @@ export default function LoginForm() {
       setLoading(false);
     } else {
       router.push("/");
-      router.refresh(); // Crucial to update Server Components
+      router.refresh();
     }
   };
 

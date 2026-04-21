@@ -4,21 +4,50 @@ import { revalidatePath } from "next/cache";
 import { authGuard } from "../auth-utils";
 import { prisma } from "../db";
 import { LoanStatus } from "@prisma/client";
+import { formatCurrency, formatTime } from "../utils/date-logic";
+import getTotalInHand from "./getTotalInHand";
 
 export default async function requestLoanAction({
   amount,
   description,
+  groupId,
 }: {
   amount: number;
   description: string;
+  groupId: string | null;
 }) {
   const session = await authGuard();
   const userId = session.user.id;
 
-  if (!userId) throw new Error("Unauthorized");
+  if (!userId || !groupId) throw new Error("Unauthorized");
+
+  const availableCash = await getTotalInHand();
+
   const floatAmount = parseFloat(`${amount}`);
   if (!Number.isFinite(floatAmount) || floatAmount <= 0) {
     return { success: false, error: "Invalid loan amount" };
+  }
+
+  const existingActiveLoan = await prisma.memberLoan.findFirst({
+    where: {
+      userId: userId,
+      status: LoanStatus.REQUEST,
+    },
+  });
+  if (existingActiveLoan) {
+    const { amount, issuedAt } = existingActiveLoan;
+    return {
+      success: false,
+      error: `You have already requested loan for amount: ${formatCurrency(amount)} on ${formatTime({ time: issuedAt, format: "DD-MMM,YYYY" })}`,
+    };
+  }
+
+  if (amount > availableCash) {
+    return {
+      success: false,
+      error: `Insufficient group funds. Current available cash is ${formatCurrency(availableCash)}.`,
+      code: "INSUFFICIENT_FUNDS",
+    };
   }
 
   const settings = await prisma.globalSettings.findFirst();
@@ -31,10 +60,11 @@ export default async function requestLoanAction({
     await prisma.memberLoan.create({
       data: {
         userId,
+        groupId,
         amount: floatAmount,
         interestRate: interestRate,
         status: LoanStatus.REQUEST,
-        description: `New Request at (${new Date().toLocaleString("default", { month: "long", year: "2-digit" })}) ${description}`,
+        description: `New Request at (${formatTime({})}) ${description}`,
       },
     });
 
