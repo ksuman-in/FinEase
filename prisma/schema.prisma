@@ -6,6 +6,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserType {
+  ADMIN
+  MEMBER
+  BORROWER
+}
+
 enum LoanStatus {
   ACTIVE
   PAID
@@ -35,8 +41,15 @@ model User {
   updatedAt     DateTime @updatedAt
 
   // Custom FinEase Fields
-  role        String? @default("member") // admin, member, borrower
-  phoneNumber String? @unique
+  role        UserType @default(MEMBER)
+  phoneNumber String?  @unique
+
+  // Relation: As a member of a group
+  groupId String?
+  group   Group?  @relation("GroupMembers", fields: [groupId], references: [id])
+
+  // Relation: As the Admin/Owner of a group
+  administeredGroup Group? @relation("GroupAdmin")
 
   // Financial Relations (Moved from Member)
   loans        MemberLoan[]
@@ -63,6 +76,9 @@ model MemberLoan {
   user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions MemberTransaction[]
 
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id])
+
   @@index([userId])
 }
 
@@ -76,8 +92,10 @@ model MemberTransaction {
   description String?
 
   // Relations
-  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  loans MemberLoan? @relation(fields: [loanId], references: [id])
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loans   MemberLoan? @relation(fields: [loanId], references: [id])
+  group   Group?      @relation(fields: [groupId], references: [id])
+  groupId String?
 
   @@index([userId, date])
   @@index([type])
@@ -110,6 +128,9 @@ model MonthlyReport {
   totalDistributed Float @default(0) // Outstanding Principal
   cashInHand       Float @default(0) // Liquid cash
   totalGroupValue  Float @default(0) // Cash + Distributed
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id])
 }
 
 model Session {
@@ -158,4 +179,37 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Group {
+  id           String @id @default(cuid())
+  name         String @default("Power 10 Finance")
+  maxMembers   Int    @default(10)
+  interestRate Float  @default(1.0)
+  strategy     String @default("Power 5 Rotation")
+
+  // The Admin/Agent who manages this specific group
+  adminId String? @unique
+  admin   User?   @relation("GroupAdmin", fields: [adminId], references: [id])
+
+  // Relationships
+  members       User[]              @relation("GroupMembers")
+  allowedEmails AllowedUser[]
+  reports       MonthlyReport[]
+  loans         MemberLoan[]
+  transactions  MemberTransaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AllowedUser {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  phoneNumber String   @unique // Added unique phone number
+  groupId     String
+  group       Group    @relation(fields: [groupId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([email, phoneNumber]) // Speeds up lookup during registration
 }

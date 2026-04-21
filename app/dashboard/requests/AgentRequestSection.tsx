@@ -10,6 +10,7 @@ type RequestType = {
   issuedAt: Date;
   amount: number;
   description: string | null;
+  groupId: string;
 };
 export default function AdminPendingRequests({
   requests,
@@ -20,11 +21,15 @@ export default function AdminPendingRequests({
     id: string;
     action: LoanStatus;
   } | null>(null);
-
-  const handleAction = async (loanId: string, action: LoanStatus) => {
+  console.log({ requests });
+  const handleAction = async (
+    loanId: string,
+    action: LoanStatus,
+    groupId: string,
+  ) => {
     try {
       setProcessingState({ id: loanId, action });
-      await processLoanAction(loanId, action);
+      await processLoanAction(loanId, action, groupId);
     } catch (error) {
       console.error("Failed to process action:", error);
     } finally {
@@ -100,7 +105,13 @@ export default function AdminPendingRequests({
                   type="button"
                   aria-label={`Cancel request for ${request.user.name}`}
                   disabled={isAnyLoading}
-                  onClick={() => handleAction(request.id, LoanStatus.CANCELLED)}
+                  onClick={() =>
+                    handleAction(
+                      request.id,
+                      LoanStatus.CANCELLED,
+                      request?.groupId,
+                    )
+                  }
                   className={`w-12 h-12 flex items-center justify-center rounded-2xl border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                     isCancelling
                       ? "border-rose-500 text-rose-500 bg-rose-50"
@@ -116,7 +127,9 @@ export default function AdminPendingRequests({
 
                 <button
                   disabled={isAnyLoading}
-                  onClick={() => handleAction(request.id, LoanStatus.ACTIVE)}
+                  onClick={() =>
+                    handleAction(request.id, LoanStatus.ACTIVE, request.groupId)
+                  }
                   className="min-w-40 px-6 h-12 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer hover:bg-blue-600 transition-all shadow-lg disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isApproving ? (

@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { logoutAction } from "@/lib/actions/auth";
+import { UserType } from "@prisma/client";
 
 const menuItems = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -32,7 +33,7 @@ export default function Sidebar({
   pendingCount,
 }: SidebarProps) {
   const pathname = usePathname();
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === UserType.ADMIN;
 
   const handleLogout = async () => {
     await logoutAction();

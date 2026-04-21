@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 export default async function HomePage() {
   const session = await getSession();
 
-  // If logged in, the home page should probably just go to dashboard
   if (session) {
     redirect("/dashboard");
   }

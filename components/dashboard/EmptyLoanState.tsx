@@ -3,14 +3,21 @@
 import { HandCoins, Plus, HeartHandshake } from "lucide-react";
 import { useState } from "react";
 import TransactionModal from "../model/TransactionModal";
-import { TransactionType } from "@prisma/client";
+import { LoanStatus, TransactionType, User } from "@prisma/client";
 import requestLoanAction from "@/lib/actions/requestLoanAction";
 import { settleMonthlyPaymentAction } from "@/lib/actions/settleMonthlyPaymentAction";
 import { configTimeline } from "@/utils/constant";
 
 type TransactionMode = "NEW_LOAN" | "CONTRIB";
 
-export function EmptyLoanState() {
+export function EmptyLoanState({
+  loan,
+  user,
+}: {
+  loan: { status: string; amount: number } | null;
+  user: { groupId: string };
+}) {
+  const isAlreadyLoanRequested = loan?.status === LoanStatus.REQUEST;
   const [activeMode, setActiveMode] = useState<TransactionMode | null>(null);
 
   const day = new Date().getDate();
@@ -18,13 +25,15 @@ export function EmptyLoanState() {
   const interestEnd = configTimeline.INTEREST.end;
   const isOpen = day >= interestStart && day <= interestEnd;
 
-  console.log({ day }, isOpen);
-
   const handleRequestNewLoan = async (values: {
     amount: number;
     description: string;
   }) => {
-    const response = await requestLoanAction(values);
+    console.log({ user });
+    const response = await requestLoanAction({
+      ...values,
+      groupId: user?.groupId,
+    });
     return response as { success?: boolean; error?: string };
   };
 
@@ -59,7 +68,8 @@ export function EmptyLoanState() {
           </div>
           <button
             onClick={() => openModal(TransactionType.NEW_LOAN)}
-            className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl cursor-pointer flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+            className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl cursor-pointer flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:bg-slate-400 disabled:cursor-not-allowed"
+            disabled={isAlreadyLoanRequested}
           >
             <Plus className="w-5 h-5" />
             Get New Loan

@@ -1,91 +1,49 @@
-import GroupPulseCard from "@/components/admin/GroupPulseCard";
-import InviteMemberCard from "@/components/admin/InviteMemberCard";
+// src/app/admin/page.tsx
 import { authGuard } from "@/lib/auth-utils";
+import InviteMemberCard from "@/components/admin/InviteMemberCard";
+import { prisma } from "@/lib/db";
+import MemberList from "@/components/admin/MemberList";
 
-const mockGroup = {
-  id: "power-10-main-id",
-  name: "Power 10 Finance",
-  membersCount: 8,
-  maxMembers: 10,
-  members: [
-    { id: "1", name: "Agent Alpha", email: "admin@power10.com" },
-    { id: "2", name: "John Doe", email: "john@example.com" },
-    { id: "3", name: "Sarah Smith", email: "sarah@example.com" },
-  ],
-};
+export default async function AdminPage() {
+  const session = await authGuard({ adminOnly: true });
+  const adminGroupId = session.user.groupId!;
 
-export default async function AdminDashboard() {
-  const session = await authGuard();
-
-  //   // SECURITY: Redirect non-admins back to the member dashboard
-  //   if (session.user.role !== "ADMIN") {
-  //     redirect("/dashboard");
-  //   }
-
-  //   // Fetch Group Data
-  //   const group = await prisma.group.findFirst({
-  //     include: {
-  //       _count: { select: { members: true } },
-  //       members: { select: { id: true, name: true, email: true } }
-  //     }
-  //   });
-
-  //   if (!group) return <div className="p-10">Please seed your Group in the DB first.</div>;
+  // Fetch group name for the header
+  const group = await prisma.group.findUnique({
+    where: { id: adminGroupId },
+    select: { name: true },
+  });
 
   return (
-    <main className="min-h-screen bg-white/50 p-6 md:p-12">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-          <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tighter">
-              Admin Command
-            </h1>
-            <p className="text-slate-900 font-bold uppercase text-[10px] tracking-[0.2em]">
-              Managing: {mockGroup.name}
-            </p>
-          </div>
-          <div className="px-4 py-2 bg-white border border-slate-200 rounded-2xl text-[10px] font-black text-slate-400">
-            SYSTEM STATUS: <span className="text-emerald-500">OPTIMAL</span>
-          </div>
+    <main className="max-w-6xl mx-auto p-6 space-y-12">
+      {/* Header */}
+      <header className="space-y-1">
+        <h1 className="text-4xl font-black text-white tracking-tighter">
+          {group?.name || "Group"} <span className="text-blue-500">Admin</span>
+        </h1>
+        <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
+          Management Console
+        </p>
+      </header>
+
+      {/* Primary Action: Invite */}
+      <section>
+        <InviteMemberCard groupId={adminGroupId} />
+      </section>
+
+      {/* Member Management: The List */}
+      <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 mt-6">
+        <div className="flex items-center justify-between mb-6 px-4">
+          <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">
+            Active Roster
+          </h2>
+          <span className="text-[10px] text-slate-500 font-bold bg-white/5 px-3 py-1 rounded-full border border-white/10">
+            Updated Real-time
+          </span>
         </div>
 
-        {/* Top Grid: Pulse and Invite */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <GroupPulseCard
-            membersCount={mockGroup.membersCount}
-            maxMembers={mockGroup.maxMembers}
-          />
-          <InviteMemberCard groupId={mockGroup.id} />
-        </div>
-
-        {/* Bottom Section: Member Quick List */}
-        <section className="bg-white border border-slate-100 rounded-[3rem] p-10 shadow-xl shadow-slate-200/50">
-          <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-6">
-            Current Members ({mockGroup.membersCount}/10)
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {mockGroup.members.map((member) => (
-              <div
-                key={member.id}
-                className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3"
-              >
-                <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-xs">
-                  {member.name?.[0] || "U"}
-                </div>
-                <div>
-                  <p className="text-xs font-black text-slate-900">
-                    {member.name}
-                  </p>
-                  <p className="text-[10px] font-medium text-slate-400">
-                    {member.email}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
+        <MemberList groupId={adminGroupId} />
+      </section>
     </main>
   );
 }

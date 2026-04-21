@@ -11,7 +11,12 @@ import {
   CellContext,
 } from "@tanstack/react-table";
 import { ChevronLeft, ChevronRight, Calendar, Search } from "lucide-react";
-import { MemberTransaction, TransactionType, User } from "@prisma/client";
+import {
+  MemberTransaction,
+  TransactionType,
+  User,
+  UserType,
+} from "@prisma/client";
 import { MONTHS } from "@/utils/constant";
 
 export default function TransactionsPage({
@@ -44,7 +49,7 @@ export default function TransactionsPage({
 
   const columns = useMemo(() => {
     const cols: ColumnDef<MemberTransaction>[] = [];
-    if (currentUser.role === "admin") {
+    if (currentUser.role === UserType.ADMIN) {
       cols.push({
         accessorKey: "user.name",
         header: "Member",

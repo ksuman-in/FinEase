@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import AgentRequestSection from "./AgentRequestSection";
 import { authGuard } from "@/lib/auth-utils";
+import { UserType } from "@prisma/client";
 
 export default async function RequestsPage() {
   const session = await authGuard();
@@ -11,7 +12,7 @@ export default async function RequestsPage() {
     select: { role: true },
   });
 
-  if (user?.role !== "admin") {
+  if (user?.role !== UserType.ADMIN) {
     redirect("/dashboard");
   }
 
