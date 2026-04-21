@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { UserType } from "@prisma/client";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
@@ -38,7 +39,7 @@ export const requireAuth = async () => {
  * Ensures the user has a specific role (e.g., 'admin').
  * Redirects to dashboard if they don't have permission.
  */
-export const requireRole = async (role: "admin" | "user") => {
+export const requireRole = async (role: "ADMIN" | "user") => {
   const session = await requireAuth();
 
   if (session.user.role !== role) {
@@ -49,21 +50,28 @@ export const requireRole = async (role: "admin" | "user") => {
 };
 
 export const authGuard = cache(async (options?: { adminOnly?: boolean }) => {
-  // 1. Fetch session from Better Auth
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  // 2. If no session, kick to login
   if (!session) {
     redirect("/login");
   }
 
-  // 3. If admin area and user is a mere mortal, kick to dashboard
-  if (options?.adminOnly && session.user.role !== "admin") {
-    redirect("/dashboard");
+  if (options?.adminOnly) {
+    const isNotAdmin = session.user.role !== UserType.ADMIN;
+    const hasNoGroup = !session.user.groupId;
+
+    if (isNotAdmin) {
+      console.log("DEBUG: Redirecting because role is:", session.user.role);
+      redirect("/dashboard");
+    }
+
+    if (hasNoGroup) {
+      console.log("DEBUG: Redirecting because groupId is missing");
+      redirect("/dashboard");
+    }
   }
 
-  // 4. Return the session for use in the component
   return session;
 });

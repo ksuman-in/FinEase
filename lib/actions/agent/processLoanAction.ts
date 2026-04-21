@@ -2,12 +2,16 @@
 
 import { authGuard } from "@/lib/auth-utils";
 import { prisma } from "@/lib/db";
-import { LoanStatus, TransactionType } from "@prisma/client";
+import { LoanStatus, TransactionType, UserType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-export async function processLoanAction(loanId: string, action: LoanStatus) {
+export async function processLoanAction(
+  loanId: string,
+  action: LoanStatus,
+  groupId: string,
+) {
   const session = await authGuard();
-  if (session.user?.role !== "admin") {
+  if (session.user?.role !== UserType.ADMIN) {
     throw new Error("Forbidden");
   }
 
@@ -24,10 +28,11 @@ export async function processLoanAction(loanId: string, action: LoanStatus) {
 
   if (action === LoanStatus.CANCELLED) {
     await prisma.memberLoan.update({
-      where: { id: loanId },
+      where: { id: loanId, groupId },
       data: { status: LoanStatus.CANCELLED },
     });
     revalidatePath("/admin");
+    revalidatePath("/dashboard");
     return { success: true };
   }
 
@@ -45,18 +50,19 @@ export async function processLoanAction(loanId: string, action: LoanStatus) {
      */
     await prisma.$transaction([
       prisma.memberLoan.update({
-        where: { id: existingActiveLoan.id },
+        where: { id: existingActiveLoan.id, groupId },
         data: { amount: { increment: request.amount } },
       }),
 
       prisma.memberLoan.update({
-        where: { id: loanId },
+        where: { id: loanId, groupId },
         data: { status: LoanStatus.CLOSED },
       }),
 
       prisma.memberTransaction.create({
         data: {
           userId: request.userId,
+          groupId,
           loanId: existingActiveLoan.id,
           amount: request.amount,
           type: TransactionType.TOP_UP,
@@ -77,8 +83,9 @@ export async function processLoanAction(loanId: string, action: LoanStatus) {
         data: {
           userId: request.userId,
           loanId: request.id,
+          groupId,
           amount: request.amount,
-          type: TransactionType.NEW_LOAN, // Logged as NEW_LOAN
+          type: TransactionType.NEW_LOAN,
           description: `Initial Loan Approved: ${request.description || "Principal"}`,
         },
       }),

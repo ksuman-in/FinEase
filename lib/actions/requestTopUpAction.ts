@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { LoanStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { authGuard } from "../auth-utils";
+import getTotalInHand from "./getTotalInHand";
+import { formatCurrency } from "../utils/date-logic";
 
 export async function requestTopUpAction({
   amount,
@@ -21,6 +23,8 @@ export async function requestTopUpAction({
       error: "Top-up amount must be greater than zero.",
     };
   }
+
+  const availableCash = await getTotalInHand();
 
   const activeLoan = await prisma.memberLoan.findFirst({
     where: {
@@ -48,9 +52,18 @@ export async function requestTopUpAction({
     };
   }
 
+  if (amount > availableCash) {
+    return {
+      success: false,
+      error: `Insufficient group funds. Current available cash is ${formatCurrency(availableCash)}.`,
+      code: "INSUFFICIENT_FUNDS",
+    };
+  }
+
   await prisma.memberLoan.create({
     data: {
       userId: session.user.id,
+      groupId: activeLoan?.groupId,
       amount: amount,
       description: `TOP-UP: ${description}`,
       status: LoanStatus.REQUEST,

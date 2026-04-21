@@ -1,69 +1,126 @@
-import RegisterForm from "@/components/auth/RegisterForm";
-import { ArrowRight, HandCoins, Target, TrendingUp, Zap } from "lucide-react";
-import Link from "next/link";
+import {
+  HandCoins,
+  Target,
+  TrendingUp,
+  Zap,
+  ShieldCheck,
+  UserPlus,
+} from "lucide-react";
+import RegisterForm from "./RegisterForm";
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-app-foreground">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
-          {/* Left Side: Description */}
-          <div className="space-y-8">
-            <div className="space-y-4">
+    <div className="min-h-screen bg-app-foreground relative overflow-hidden">
+      {/* Background Orbs for Depth */}
+      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] -z-10" />
+      <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-emerald-600/5 rounded-full blur-[100px] -z-10" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left Column: Value Proposition */}
+          <div className="space-y-12">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium animate-pulse">
+                <ShieldCheck className="w-4 h-4" />
+                Invite-Only Access
+              </div>
+
               <h2 className="text-5xl lg:text-7xl font-extrabold text-white tracking-tighter leading-[1.1]">
-                Grow your <span className="text-blue-500">wealth</span>,
-                together.
+                Your journey to <br />
+                <span className="text-blue-500">Collective Wealth</span>
               </h2>
               <p className="text-xl text-slate-400 max-w-lg leading-relaxed">
-                The ultimate ledger for group finances. Automate your monthly
-                contributions and track loans with total transparency.
+                {`Join your group's private vault. Set up your profile to start
+                contributing, requesting loans, and tracking shared growth.`}
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-6">
+            {/* Feature Grid */}
+            <div className="grid sm:grid-cols-2 gap-4">
               {[
                 {
                   icon: HandCoins,
-                  title: "Ledger",
-                  desc: "Automated tracking",
+                  title: "Smart Ledger",
+                  desc: "No more manual spreadsheets",
                 },
                 {
                   icon: TrendingUp,
-                  title: "Yield",
-                  desc: "Interest calculation",
+                  title: "High Yield",
+                  desc: "Interest grows your capital",
                 },
-                { icon: Target, title: "Goals", desc: "Loan management" },
-                { icon: Zap, title: "Speed", desc: "Real-time reports" },
+                {
+                  icon: Target,
+                  title: "Fast Loans",
+                  desc: "Approval in just a few clicks",
+                },
+                {
+                  icon: Zap,
+                  title: "Instant Sync",
+                  desc: "Real-time balance updates",
+                },
               ].map((f, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl"
+                  className="group p-5 bg-slate-900/50 border border-slate-800 rounded-2xl hover:border-blue-500/50 transition-all duration-300"
                 >
-                  <f.icon className="w-6 h-6 text-blue-500" />
-                  <div>
-                    <h4 className="text-white font-bold">{f.title}</h4>
-                    <p className="text-app-bg0 text-xs">{f.desc}</p>
-                  </div>
+                  <f.icon className="w-8 h-8 text-blue-500 mb-3 group-hover:scale-110 transition-transform" />
+                  <h4 className="text-white font-bold">{f.title}</h4>
+                  <p className="text-slate-500 text-sm">{f.desc}</p>
                 </div>
               ))}
             </div>
+
+            {/* Trust Footer */}
+            <div className="flex items-center gap-6 pt-4">
+              <div className="flex -space-x-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="w-10 h-10 rounded-full border-2 border-app-foreground bg-slate-800 flex items-center justify-center text-[10px] text-slate-400"
+                  >
+                    User
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-slate-400">
+                Join{" "}
+                <span className="text-white font-bold text-base">500+</span>{" "}
+                members managing their <br />
+                finances with total transparency.
+              </p>
+            </div>
           </div>
 
-          {/* Right Side: Centered Form */}
-          <div className="flex justify-center">
-            <div className="w-full max-w-md p-1 bg-gradient-to-b from-blue-500/20 to-purple-500/20 rounded-[2.1rem]">
-              <div className="bg-app-foreground/90 backdrop-blur-xl p-8 rounded-[2rem] border border-white/5 shadow-2xl">
-                <RegisterForm />
-                <div className="mt-8 pt-6 border-t border-white/10 text-center">
-                  <p className="text-app-bg0 text-sm mb-4">Already a member?</p>
-                  <Link
-                    href="/login"
-                    className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-bold transition-colors group"
-                  >
-                    Sign In Here
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+          {/* Right Column: Form Container */}
+          <div className="relative">
+            {/* Form Glow */}
+            <div className="absolute inset-0 bg-blue-500/10 blur-[80px] -z-10" />
+
+            <div className="bg-slate-900/40 border border-slate-800 backdrop-blur-md rounded-[2.5rem] p-1 shadow-2xl">
+              <div className="bg-app-foreground/80 rounded-[2.4rem] p-8 lg:p-12">
+                <div className="mb-10">
+                  <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4">
+                    <UserPlus className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white">
+                    Create Account
+                  </h3>
+                  <p className="text-slate-400 text-sm mt-1">
+                    Complete your registration to enter the dashboard.
+                  </p>
                 </div>
+
+                <RegisterForm />
+
+                <p className="mt-8 text-center text-sm text-slate-500">
+                  Already have an account?{" "}
+                  <a
+                    href="/login"
+                    className="text-blue-500 hover:underline font-medium"
+                  >
+                    Log in here
+                  </a>
+                </p>
               </div>
             </div>
           </div>

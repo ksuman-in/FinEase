@@ -18,6 +18,7 @@ export async function settleMonthlyPaymentAction({
 }) {
   const session = await authGuard();
   const userId = session.user.id;
+  const groupId = session.user.groupId;
 
   if (!userId) throw new Error("Unauthorized");
 
@@ -29,6 +30,7 @@ export async function settleMonthlyPaymentAction({
         data: {
           userId,
           loanId,
+          groupId,
           amount: interestAmount,
           type: TransactionType.INT_PAID,
           description: `Monthly Interest Settlement (${new Date().toLocaleString("default", { month: "long" })}) ${description}`,
@@ -42,6 +44,7 @@ export async function settleMonthlyPaymentAction({
       prisma.memberTransaction.create({
         data: {
           userId,
+          groupId,
           amount: contributionAmount,
           type: TransactionType.CONTRIB,
           description: `Monthly Pool Contribution ${description}`,
