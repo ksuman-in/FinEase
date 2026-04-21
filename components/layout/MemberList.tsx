@@ -40,7 +40,10 @@ export default async function MemberList() {
   return (
     <>
       {members.map((m) => (
-        <tr key={m.id} className="hover:bg-white/3 transition-colors group">
+        <tr
+          key={m.id}
+          className="hover:bg-white/[0.03] transition-colors group"
+        >
           <td className="px-6 py-4 font-medium text-slate-200">{m.name}</td>
 
           <td className="px-6 py-4 text-cyan-400 font-mono">₹{m.int}</td>

@@ -1,12 +1,17 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+// middleware.ts
+import { NextResponse, type NextRequest } from "next/server";
 
-export default clerkMiddleware();
+export async function proxy(request: NextRequest) {
+  const token =
+    request.cookies.get("better-auth.session_token")?.value ||
+    request.cookies.get("__Secure-better-auth.session_token")?.value;
 
-export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
-  ],
-};
+  const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard");
+
+  // If we are on a protected route and NO token exists
+  if (isProtectedRoute && !token) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
+}
