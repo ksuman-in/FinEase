@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { TransactionType } from "@prisma/client";
 import { formatCurrency } from "@/lib/utils/date-logic";
 import { generatInformations, transactionType } from "@/utils/constant";
+import Portal from "../ui/Portal";
 
 type TransactionMode = "TOP_UP" | "CONTRIB" | "PRIN_REPAY" | "NEW_LOAN";
 
@@ -25,10 +26,10 @@ interface ModalProps {
     | {
         success?: boolean;
         error?: string;
-        message?: string; // Add message since your actions use it
+        message?: string;
         [key: string]: unknown;
       }
-    | undefined // This is the crucial part to fix the error
+    | undefined
   >;
   maxAmount?: number;
   interestRate?: number;
@@ -124,6 +125,7 @@ export default function TransactionModal({
     reset({ amount: minValue });
     onClose();
   };
+
   useEffect(() => {
     if (!isOpen) return;
     document.body.style.overflow = "hidden";
@@ -148,7 +150,6 @@ export default function TransactionModal({
   }) => {
     setServerError(null);
     try {
-      // Ensure we are passing a number to the parent action
       const response = await onSubmit({
         amount: Number(values.amount),
         description: values.description,
@@ -160,183 +161,184 @@ export default function TransactionModal({
       onClose();
       reset();
     } catch (error) {
-      if (error instanceof Error) {
-        setServerError(error.message);
-      } else {
-        setServerError("An unexpected error occurred.");
-      }
-      console.error("Transaction failed:", error);
+      setServerError(
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred. Please try again.",
+      );
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Glass Overlay */}
-      <div
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
-        onClick={handleClose}
-      />
-
-      {/* White Glassmorphism Card */}
-      <div className="relative w-full max-w-lg bg-white/90 backdrop-blur-2xl border border-white rounded-[3rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-        <button
+    <Portal>
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 font-sans">
+        <div
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] animate-in fade-in duration-300"
           onClick={handleClose}
-          className="absolute right-8 top-8 p-2 text-slate-400 hover:text-slate-900 transition-colors"
-        >
-          <X size={20} />
-        </button>
+        />
 
-        <form onSubmit={handleSubmit(handleFormSubmit)}>
-          {serverError && (
-            <div className="mx-8 mt-6 p-4 bg-rose-50/80 backdrop-blur-md border border-rose-200 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
-              <div className="w-8 h-8 rounded-xl bg-rose-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-rose-200">
-                <AlertCircle size={18} strokeWidth={3} />
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest">
-                  Action Failed
-                </p>
-                <p className="text-sm font-bold text-rose-900 leading-tight">
-                  {String(serverError)}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setServerError(null)}
-                className="p-2 text-rose-300 hover:text-rose-500 transition-colors"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          )}
-          <div className="p-8 pb-4 flex items-center gap-4">
-            <div
-              className={`w-14 h-14 rounded-2xl ${config.badge} flex items-center justify-center`}
-            >
-              {config.icon}
-            </div>
-            <div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-                {config.title}
-              </h2>
-              <p className="text-sm font-medium text-slate-500">
-                {config.subtitle}
-              </p>
-            </div>
-          </div>
+        <div className="relative w-full max-w-lg z-[110] bg-white/80 backdrop-blur-3xl border border-white rounded-[3rem] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.2)] overflow-hidden animate-in fade-in zoom-in duration-500">
+          <div className="absolute inset-0 rounded-[3rem] border-t border-l border-white/90 pointer-events-none z-10" />
 
-          <div className="p-8 pt-4 space-y-6">
-            <div className="space-y-3">
-              <div className="flex justify-between items-end ml-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                  Amount (₹)
-                </label>
-                {isContribution && (
-                  <span className="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-md">
-                    Min: {formatCurrency(minValue)}
-                  </span>
-                )}
-              </div>
+          <button
+            onClick={handleClose}
+            className="absolute right-8 top-8 p-2.5 bg-white/80 border border-white rounded-2xl text-slate-400 hover:text-slate-900 shadow-sm transition-all z-20"
+          >
+            <X size={20} strokeWidth={2.5} />
+          </button>
 
-              <input
-                type="number"
-                {...register("amount", {
-                  required: "Amount is required",
-                  min: {
-                    value: minValue,
-                    message: `Minimum required is ${formatCurrency(minValue)}`,
-                  },
-                  max: {
-                    value: maxAmount,
-                    message: `Maximum allowed is ${formatCurrency(maxAmount)}`,
-                  },
-                })}
-                className={`w-full h-20 px-8 rounded-[2rem] text-3xl font-black outline-none transition-all border-2 ${errors.amount ? "bg-rose-50/50 border-rose-200 text-rose-900 focus:border-rose-500" : "bg-slate-50/50 border-transparent focus:border-slate-900 text-slate-900"}`}
-              />
-              {/* Error Message Display */}
-              {errors.amount && (
-                <div className="flex items-center gap-2 ml-4 text-rose-600 animate-in fade-in slide-in-from-top-1">
-                  <AlertCircle size={12} strokeWidth={3} />
-                  <p className="text-[11px] font-black uppercase tracking-tight">
-                    {errors.amount.message as string}
-                  </p>
+          <form
+            onSubmit={handleSubmit(handleFormSubmit)}
+            className="relative z-10"
+          >
+            {serverError && (
+              <div className="mx-8 mt-8 p-4 bg-rose-50/80 backdrop-blur-md border border-rose-200 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 relative z-20">
+                <div className="w-9 h-9 rounded-xl bg-rose-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-rose-200">
+                  <AlertCircle size={18} strokeWidth={3} />
                 </div>
-              )}
-            </div>
-            {/* Description Field */}
-            <div className="space-y-3">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
-                Notes / Description
-              </label>
-              <div className="relative group">
-                <textarea
-                  {...register("description")}
-                  rows={2}
-                  className="w-full p-6 bg-slate-50/50 border-2 border-transparent focus:border-slate-900 rounded-[2rem] text-sm font-bold text-slate-900 outline-none transition-all placeholder:text-slate-300 resize-none"
-                  placeholder={
-                    mode === TransactionType.PRIN_REPAY
-                      ? "What is this capital for?"
-                      : mode === TransactionType.CONTRIB
-                        ? "Monthly contribution notes..."
-                        : "Repayment details..."
-                  }
-                />
-                {/* Subtle icon decoration */}
-                <div className="absolute right-6 bottom-6 opacity-20 group-focus-within:opacity-100 transition-opacity">
-                  <div className={`w-1 h-1 rounded-full bg-slate-900 mb-1`} />
-                  <div className={`w-1 h-1 rounded-full bg-slate-900`} />
-                </div>
-              </div>
-            </div>
-
-            {/* Contextual Calculation (Only for Request/Repayment) */}
-            {mode !== "CONTRIB" && (
-              <div className="bg-slate-900 text-white rounded-[2rem] p-6 flex justify-between items-center shadow-xl shadow-slate-900/10">
-                <div className="space-y-1">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    Estimated Interest Impact
+                <div className="flex-1">
+                  <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest">
+                    Action Failed
                   </p>
-                  <p className="text-xs font-medium text-slate-300">
-                    Based on {interestRate}% rate
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-2xl font-black">
-                    ₹{calculatedInterest.toLocaleString()}
+                  <p className="text-sm font-bold text-rose-900 leading-tight">
+                    {String(serverError)}
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Adaptive Note */}
-            <div className="flex gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-              <AlertCircle className="w-5 h-5 text-slate-400 shrink-0" />
-              <p className="text-[11px] text-slate-600 leading-relaxed font-medium italic">
-                {config.note}
-              </p>
+            <div className="p-8 pb-4 flex items-center gap-5 bg-white/20">
+              <div
+                className={`w-16 h-16 rounded-2xl ${config.badge} flex items-center justify-center border border-white shadow-sm`}
+              >
+                {config.icon}
+              </div>
+              <div>
+                <h2 className="text-3xl font-black text-slate-900 tracking-tighter">
+                  {config.title}
+                </h2>
+                <p className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">
+                  {config.subtitle}
+                </p>
+              </div>
             </div>
-          </div>
 
-          {/* Actions */}
-          <div className="p-8 pt-0 flex gap-4">
-            <button
-              type="submit"
-              disabled={amount <= 0 || isSubmitting}
-              className={`flex-1 h-16 bg-slate-900 hover:bg-blue-600 text-white font-black rounded-[1.5rem] shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer`}
-            >
-              {isSubmitting ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <>
-                  {config.cta} <Check size={18} />
-                </>
+            <div className="p-8 pt-4 space-y-8 bg-white/10">
+              <div className="space-y-3">
+                <div className="flex justify-between items-end px-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    Amount (₹)
+                  </label>
+                  {isContribution && (
+                    <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                      Required: {formatCurrency(minValue)}
+                    </span>
+                  )}
+                </div>
+
+                <div className="relative">
+                  <input
+                    type="number"
+                    {...register("amount", {
+                      required: "Amount is required",
+                      min: {
+                        value: minValue,
+                        message: `Minimum is ${formatCurrency(minValue)}`,
+                      },
+                      max: {
+                        value: maxAmount,
+                        message: `Maximum is ${formatCurrency(maxAmount)}`,
+                      },
+                    })}
+                    className={`w-full h-24 px-8 rounded-[2.5rem] text-4xl font-black outline-none transition-all border-2 ${
+                      errors.amount
+                        ? "bg-rose-50/30 border-rose-200 text-rose-900"
+                        : "bg-slate-100/40 border-transparent focus:border-slate-900 text-slate-900"
+                    }`}
+                  />
+                </div>
+                {errors.amount && (
+                  <div className="flex items-center gap-2 px-4 text-rose-600">
+                    <AlertCircle size={14} strokeWidth={3} />
+                    <p className="text-[11px] font-black uppercase">
+                      {errors.amount.message as string}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Description Field */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1">
+                  Notes / Transaction Info
+                </label>
+                <textarea
+                  {...register("description")}
+                  rows={2}
+                  className="w-full p-6 bg-slate-100/40 border-2 border-transparent focus:border-slate-900 rounded-[2rem] text-base font-bold text-slate-900 outline-none transition-all placeholder:text-slate-300 resize-none"
+                  placeholder="Briefly describe this movement of funds..."
+                />
+              </div>
+
+              {/* Contextual Calculation (Request/Repayment) */}
+              {mode !== "CONTRIB" && (
+                <div className="bg-slate-900 text-white rounded-[2.5rem] p-8 flex justify-between items-center shadow-2xl shadow-slate-900/20 relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.02] to-white/[0.05] pointer-events-none" />
+                  <div className="space-y-1 relative z-10">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                      Estimated Interest Impact
+                    </p>
+                    <p className="text-xs font-bold text-blue-400">
+                      Power 10 Rate: {interestRate}%
+                    </p>
+                  </div>
+                  <div className="text-right relative z-10">
+                    <p className="text-3xl font-black tracking-tighter">
+                      ₹{calculatedInterest.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
               )}
-            </button>
-          </div>
-        </form>
+
+              {/* Adaptive Help Note */}
+              <div className="flex gap-4 p-5 bg-white/50 border border-white rounded-[2rem] shadow-sm">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 shrink-0">
+                  <AlertCircle size={16} strokeWidth={2.5} />
+                </div>
+                <p className="text-[12px] text-slate-600 leading-relaxed font-medium">
+                  {config.note}
+                </p>
+              </div>
+            </div>
+
+            {/* Action Footer */}
+            <div className="p-8 pt-0 relative z-20">
+              <button
+                type="submit"
+                disabled={amount <= 0 || isSubmitting}
+                className="w-full h-18 bg-slate-900 hover:bg-blue-600 text-white font-black rounded-[2rem] shadow-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <>
+                    <span className="text-xs uppercase tracking-[0.2em]">
+                      {config.cta}
+                    </span>
+                    <Check
+                      size={20}
+                      strokeWidth={3}
+                      className="group-hover:translate-x-1 transition-transform"
+                    />
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </Portal>
   );
 }

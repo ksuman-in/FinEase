@@ -1,27 +1,19 @@
-// components/ui/logo.tsx
-import LogoIcon from "./logo-icon";
+import { VaultLogoIcon } from "./logo-icon";
 
-export default function Logo({ showIcon = true }: { showIcon?: boolean }) {
+export default function Logo() {
   return (
-    <div className="flex items-center gap-4">
-      {showIcon && <LogoIcon size={12} />}
+    <div className="flex items-center gap-4 select-none group">
+      <div className="relative transform transition-transform duration-700 group-hover:rotate-12">
+        {/* The New Bigger Icon */}
+        <VaultLogoIcon />
 
-      {/* 3. The Integrated Wordmark */}
-      <div className="flex flex-col">
-        <h1 className="text-3xl font-black text-slate-50 tracking-[-0.07em] flex items-end">
-          {/* The Foundation (Slate) */}
-          <span className="relative">
-            FIN
-            <span className="absolute -bottom-1 left-0 w-full h-1 bg-blue-600  rounded-full animate-pulse" />
-          </span>
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent rounded-full pointer-events-none" />
+      </div>
 
-          {/* The Growth/Security (Blue) */}
-          <span className="relative text-blue-600 ml-0.5">
-            EASE
-            {/* The dot over the 'i' is implicit in the ASR spacing */}
-            <span className="absolute -top-1 right-0 w-1.5 h-1.5 bg-blue-100 rounded-full animate-pulse" />
-          </span>
-        </h1>
+      <div className="flex flex-col -space-y-1">
+        <span className="text-2xl font-black tracking-tighter text-slate-900 leading-none">
+          Vault<span className="text-blue-600">Ease</span>
+        </span>
       </div>
     </div>
   );

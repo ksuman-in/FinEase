@@ -122,18 +122,17 @@
     @apply border-border outline-ring/50;
   }
   :root {
-    /* Main Theme Tokens */
-    --app-bg: #f8fafc;        /* Slate-50 */
-    --app-foreground: #0f172a; /* Slate-900 */
-    
-    /* Card Tokens */
-    --card-bg: #ffffff;
-    --card-border: #e2e8f0;    /* Slate-200 */
-    
-    /* Accent Tokens */
-    --primary: #2563eb;        /* Blue-600 */
-    --accent-bg: #eff6ff;     /* Blue-50 */
-  }
+  --glass-bg: rgba(255, 255, 255, 0.08);    /* Increased brightness */
+  --glass-border: rgba(255, 255, 255, 0.15); /* Stronger white edge */
+  --glass-blur: 14px;
+}
+
+  .dark {
+  /* Even in dark mode, the glass 'fill' should be white-based for this effect */
+  --glass-bg: rgba(255, 255, 255, 0.04); 
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: 18px;
+}
 
   /* You can add a .dark class here later if you want a toggle */
   .dark-mode-override {
@@ -150,12 +149,28 @@
     @apply font-sans;
   }
   .dashboard-bg {
-    background-color: #020617; /* Slate-950 */
+    /* Lighter background to allow the glass to remain "White" */
+    background-color: #f3f4f6; 
     background-image: 
-      radial-gradient(at 0% 0%, #057e9426 0, transparent 100%), 
-      radial-gradient(at 100% 100%, #0d358c26 0, transparent 100%);
+      radial-gradient(at 0% 0%, rgba(255, 255, 255, 1) 0, transparent 60%), 
+      radial-gradient(at 100% 100%, rgba(209, 213, 219, 0.3) 0, transparent 60%);
     background-attachment: fixed;
   }
+  .glass-nav {
+  /* Semi-opaque white base */
+  background: rgba(255, 255, 255, 1.5);
+  
+  /* High blur ensures text readability while content slides underneath */
+  backdrop-filter: blur(24px) saturate(160%) contrast(95%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%) contrast(95%);
+  
+  /* Sharp top border for that 3D organic edge from your reference */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  
+  /* Soft shadow to separate nav from scrolling content */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+}
+  
 }
 .cl-userProfile-root{
   width: 100% !important;
@@ -163,6 +178,7 @@
 .cl-cardBox{
   width: 100%;
 }
+
 @layer utilities {
   .sr-only {
     position: absolute;
@@ -175,4 +191,40 @@
     white-space: nowrap;
     border-width: 0;
   }
+  /* Use this class everywhere for the Glass effect */
+  .glass-morphism {
+  /* Use a much brighter, more opaque white base */
+  background: rgba(255, 255, 255, 0.4); 
+  
+  /* Deep blur + saturation to keep colors from looking grey */
+  backdrop-filter: blur(30px) saturate(150%) contrast(90%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%) contrast(90%);
+  
+  /* The "3D Edge": A thin, bright white top border and a soft bottom border */
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* Soft "3D" Shadow to make it float */
+  box-shadow: 
+    0 20px 40px -15px rgba(0, 0, 0, 0.1),
+    inset 0 0 15px 0 rgba(255, 255, 255, 0.3);
 }
+
+  /* Premium highlight for the top of cards */
+  .glass-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-shine::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  }
+}
+

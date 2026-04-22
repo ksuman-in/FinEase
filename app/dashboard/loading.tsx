@@ -1,37 +1,65 @@
-import { ShieldCheck } from "lucide-react";
+import { Loader2, Lock, ShieldCheck } from "lucide-react";
 
 export default function Loading() {
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/60 backdrop-blur-xl animate-in fade-in duration-500">
-      {/* 1. Logo Container with Soft Depth */}
-      <div className="relative flex items-center justify-center">
-        {/* Animated Rings - Creating a 'Ping' effect */}
-        <div className="absolute w-24 h-24 border border-blue-100 rounded-[2rem] animate-ping opacity-20" />
-        <div className="absolute w-20 h-20 border-2 border-blue-500/20 rounded-[1.8rem] animate-pulse" />
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-50/60 backdrop-blur-2xl animate-in fade-in duration-700">
+      {/* 1. Visual Centerpiece: The Animated Vault Core */}
+      <div className="relative flex items-center justify-center scale-110">
+        {/* Triple-layer Ping: Creating depth through timing */}
+        <div className="absolute w-32 h-32 border border-blue-500/20 rounded-[2.5rem] animate-[ping_3s_infinite]" />
+        <div className="absolute w-28 h-28 border border-blue-400/10 rounded-[2.2rem] animate-[ping_2s_infinite]" />
 
-        {/* The Main Icon Card */}
-        <div className="relative flex items-center justify-center w-20 h-20 bg-white border border-slate-200 shadow-xl shadow-blue-500/5 rounded-[2rem] overflow-hidden">
-          {/* Subtle Inner Glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent" />
+        {/* Floating Glass Card */}
+        <div className="relative w-24 h-24 bg-white/90 border border-white rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] flex items-center justify-center overflow-hidden animate-float">
+          {/* Shimmer Sweep Effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent -translate-x-full animate-shimmer" />
 
-          <ShieldCheck className="relative w-10 h-10 text-blue-600 animate-in zoom-in-75 duration-1000 ease-out" />
+          <div className="relative">
+            <ShieldCheck
+              className="w-12 h-12 text-blue-600 drop-shadow-sm"
+              strokeWidth={2.5}
+            />
+            {/* Spinning Sync Icon */}
+            <Loader2 className="absolute -top-1 -right-1 w-4 h-4 text-blue-400 animate-spin" />
+          </div>
         </div>
       </div>
 
-      {/* 2. Text & Progress Wrapper */}
-      <div className="mt-8 flex flex-col items-center gap-4">
-        <div className="flex flex-col items-center">
-          <h2 className="text-2xl font-black tracking-tighter text-slate-900">
-            FIN<span className="text-blue-600">EASE</span>
+      {/* 2. Brand Identity */}
+      <div className="mt-14 text-center space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-3xl font-black tracking-tighter text-slate-900 uppercase">
+            Vault<span className="text-blue-600">Ease</span>
           </h2>
-          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 mt-1">
-            Securing Ledger
-          </p>
+          <div className="flex items-center justify-center gap-3">
+            <div className="flex gap-1">
+              <span className="w-1 h-1 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <span className="w-1 h-1 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <span className="w-1 h-1 bg-blue-600 rounded-full animate-bounce" />
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400">
+              Synchronizing Ledger
+            </p>
+          </div>
         </div>
 
-        {/* 3. Refined Progress Bar */}
-        <div className="relative w-40 h-[3px] bg-slate-100 rounded-full overflow-hidden">
-          <div className="absolute h-full bg-blue-600 w-1/3 rounded-full animate-[loading-slide_1.5s_infinite_ease-in-out]" />
+        {/* 3. Progress Track with Glass Effect */}
+        <div className="relative w-56 h-1.5 bg-slate-200/40 rounded-full overflow-hidden border border-white/20 backdrop-blur-sm">
+          <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-400 rounded-full animate-[loading-slide_2s_infinite_ease-in-out]" />
+        </div>
+
+        {/* Security Meta Tags */}
+        <div className="flex gap-4 justify-center items-center opacity-60">
+          <div className="flex items-center gap-1.5">
+            <Lock size={10} className="text-slate-400" />
+            <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">
+              AES-256
+            </span>
+          </div>
+          <div className="h-3 w-[1px] bg-slate-300" />
+          <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">
+            Verifying Node
+          </span>
         </div>
       </div>
     </div>

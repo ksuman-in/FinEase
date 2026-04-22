@@ -1,37 +1,62 @@
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Lock } from "lucide-react";
 
 export default function Loading() {
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/60 backdrop-blur-xl animate-in fade-in duration-500">
-      {/* 1. Logo Container with Soft Depth */}
-      <div className="relative flex items-center justify-center">
-        {/* Animated Rings - Creating a 'Ping' effect */}
-        <div className="absolute w-24 h-24 border border-blue-100 rounded-[2rem] animate-ping opacity-20" />
-        <div className="absolute w-20 h-20 border-2 border-blue-500/20 rounded-[1.8rem] animate-pulse" />
+    <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-slate-50/40 backdrop-blur-2xl animate-in fade-in duration-700">
+      {/* Background Ambient Glows - Matching your Dashboard Blobs */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-400/10 rounded-full blur-[120px] pointer-events-none" />
 
-        {/* The Main Icon Card */}
-        <div className="relative flex items-center justify-center w-20 h-20 bg-white border border-slate-200 shadow-xl shadow-blue-500/5 rounded-[2rem] overflow-hidden">
-          {/* Subtle Inner Glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent" />
+      {/* 1. The Core Shield: Layered Glass & Motion */}
+      <div className="relative group flex items-center justify-center">
+        {/* Outer Pulsing Rim */}
+        <div className="absolute w-32 h-32 border border-blue-500/10 rounded-[2.5rem] animate-[ping_3s_infinite]" />
+        <div className="absolute w-28 h-28 border border-white rounded-[2.2rem] shadow-2xl opacity-50" />
 
-          <ShieldCheck className="relative w-10 h-10 text-blue-600 animate-in zoom-in-75 duration-1000 ease-out" />
+        {/* Floating Icon Card */}
+        <div className="relative w-24 h-24 bg-white/80 border border-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] backdrop-blur-md flex items-center justify-center overflow-hidden animate-[float_4s_infinite_ease-in-out]">
+          {/* Subtle Shimmer Effect */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+
+          <div className="relative">
+            <ShieldCheck
+              className="w-12 h-12 text-blue-600 drop-shadow-sm"
+              strokeWidth={2.5}
+            />
+            {/* Secondary Lock Icon for 'Securing' intent */}
+            <div className="absolute -bottom-1 -right-1 p-1 bg-blue-600 rounded-lg shadow-lg animate-bounce">
+              <Lock size={10} className="text-white" />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 2. Text & Progress Wrapper */}
-      <div className="mt-8 flex flex-col items-center gap-4">
-        <div className="flex flex-col items-center">
-          <h2 className="text-2xl font-black tracking-tighter text-slate-900">
-            FIN<span className="text-blue-600">EASE</span>
+      {/* 2. Brand & Logic Identity */}
+      <div className="mt-12 text-center space-y-6">
+        <div className="space-y-1">
+          <h2 className="text-3xl font-black tracking-tighter text-slate-900 animate-pulse">
+            Vault<span className="text-blue-600">Ease</span>
           </h2>
-          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 mt-1">
-            Securing Ledger
-          </p>
+          <div className="flex items-center justify-center gap-2">
+            <span className="w-1 h-1 bg-emerald-500 rounded-full animate-ping" />
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
+              Initializing Secure Protocol
+            </p>
+          </div>
         </div>
 
-        {/* 3. Refined Progress Bar */}
-        <div className="relative w-40 h-[3px] bg-slate-100 rounded-full overflow-hidden">
-          <div className="absolute h-full bg-blue-600 w-1/3 rounded-full animate-[loading-slide_1.5s_infinite_ease-in-out]" />
+        {/* 3. High-Fidelity Progress Indicator */}
+        <div className="relative w-48 h-1 bg-slate-200/50 rounded-full overflow-hidden backdrop-blur-sm border border-white/20">
+          <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-r from-transparent via-blue-600 to-transparent -translate-x-full animate-[loading-slide_1.8s_infinite_ease-in-out]" />
+        </div>
+
+        {/* Status Quick-Tags */}
+        <div className="flex gap-3 justify-center pt-2">
+          <div className="px-3 py-1 bg-white/50 border border-white rounded-full text-[8px] font-black text-slate-400 uppercase tracking-widest shadow-sm">
+            Node: Active
+          </div>
+          <div className="px-3 py-1 bg-white/50 border border-white rounded-full text-[8px] font-black text-slate-400 uppercase tracking-widest shadow-sm">
+            256-Bit SSL
+          </div>
         </div>
       </div>
     </div>

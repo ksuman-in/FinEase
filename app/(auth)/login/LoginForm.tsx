@@ -48,66 +48,79 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-black text-white tracking-tighter">
-          Login
-        </h1>
-        <p className="text-app-bg0 text-sm">Access your FinEase portal</p>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* Email */}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Email Input */}
+      <div className="space-y-1">
         <div className="relative group">
-          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-app-bg0 group-focus-within:text-blue-500 transition-colors" />
+          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
           <input
             {...register("email")}
             type="email"
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "login-email-error" : undefined}
             placeholder="Email Address"
-            className="w-full p-4 pl-12 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-slate-600 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+            className="w-full p-4 pl-12 bg-white/50 border border-white rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-medium"
           />
-          {errors.email && (
-            <p className="text-red-500 text-xs mt-1 ml-2">
-              {errors.email.message}
-            </p>
-          )}
         </div>
+        {errors.email && (
+          <p
+            id="login-email-error"
+            role="alert"
+            className="text-red-600 text-[10px] font-bold uppercase ml-2"
+          >
+            {errors.email.message}
+          </p>
+        )}
+      </div>
 
-        {/* Password */}
+      {/* Password Input */}
+      <div className="space-y-1">
         <div className="relative group">
-          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-app-bg0 group-focus-within:text-blue-500 transition-colors" />
+          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
           <input
             {...register("password")}
             type="password"
             placeholder="Password"
-            className="w-full p-4 pl-12 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-slate-600 outline-none focus:ring-2 focus:ring-blue-600/50 transition-all"
+            aria-invalid={!!errors.password}
+            aria-describedby={
+              errors.password ? "login-password-error" : undefined
+            }
+            className="w-full p-4 pl-12 bg-white/50 border border-white rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-medium"
           />
-          {errors.password && (
-            <p className="text-red-500 text-xs mt-1 ml-2">
-              {errors.password.message}
-            </p>
-          )}
         </div>
-
-        {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-sm">
-            <AlertCircle className="w-5 h-5" />
-            {error}
-          </div>
+        {errors.password && (
+          <p
+            id="login-password-error"
+            role="alert"
+            className="text-red-600 text-[10px] font-bold uppercase ml-2"
+          >
+            {errors.password.message}
+          </p>
         )}
+      </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-900 text-white font-bold rounded-2xl shadow-lg shadow-blue-600/20 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2"
+      {error && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="p-4 glass-morphism bg-red-50/50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-600 text-xs font-bold"
         >
-          {loading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            "Secure Login"
-          )}
-        </button>
-      </form>
-    </div>
+          <AlertCircle className="w-4 h-4" />
+          {error}
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full py-4 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-700 text-white font-bold rounded-2xl shadow-xl shadow-slate-900/20 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2"
+      >
+        {loading ? (
+          <Loader2 className="w-5 h-5 animate-spin" />
+        ) : (
+          "Secure Access"
+        )}
+      </button>
+    </form>
   );
 }
