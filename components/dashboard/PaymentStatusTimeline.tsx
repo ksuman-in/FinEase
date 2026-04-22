@@ -21,27 +21,24 @@ export function PaymentStatusTimeline({
       end: interestEnd,
       accent: "blue",
       icon: <Zap size={14} />,
-      shadow: "shadow-blue-200/40",
     },
     {
       label: "Principal Window",
       range: `${getOrdinal(principalStart)} — ${getOrdinal(principalEnd)}`,
       start: principalStart,
       end: principalEnd,
-      accent: "emerald",
+      accent: "green",
       icon: <ShieldCheck size={14} />,
-      shadow: "shadow-emerald-200/40",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
       {windows.map((win) => {
         const isOpen = isActiveLoan && day >= win.start && day <= win.end;
         const isFuture = day < win.start;
         const isPast = day > win.end;
 
-        // Progress bar calculation based on the specific window span
         const totalWindowDays = win.end - win.start + 1;
         const daysIntoWindow = day - win.start + 1;
         const progress = isFuture
@@ -53,64 +50,86 @@ export function PaymentStatusTimeline({
         return (
           <div
             key={win.label}
-            className={`bg-amber-50 border border-amber-100 p-6 rounded-[2rem]
-              relative  transition-all duration-700
-               backdrop-blur-2xl 
-              ${isOpen ? `shadow-2xl ${win.shadow}` : "opacity-90 grayscale-[0.8] shadow-sm"}
+            /* Refactored to Milk Glass: Added glass-morphism, white border, and deep shadows */
+            className={`glass-morphism p-8 rounded-[3rem] relative transition-all duration-700 border border-white
+              ${isOpen ? "opacity-100 shadow-2xl scale-100" : "opacity-60 grayscale-[0.6] scale-[0.98] border-white/40"}
             `}
           >
-            <div className="flex justify-between items-start mb-6">
+            {/* Top light highlight for 3D effect */}
+            <div className="absolute inset-0 rounded-[3rem] border-t border-l border-white/60 pointer-events-none" />
+
+            <div className="flex justify-between items-start mb-8">
               <div className="space-y-1">
                 <div
-                  className={`flex items-center gap-2 font-black text-[10px] uppercase tracking-[0.2em] ${isOpen ? `text-${win.accent}-600` : "text-slate-400"}`}
+                  className={`flex items-center gap-2 font-black text-[10px] uppercase tracking-[0.2em] transition-colors ${
+                    isOpen ? `text-${win.accent}-600` : "text-slate-400"
+                  }`}
                 >
-                  {win.icon}
+                  <span
+                    className={`p-1.5 rounded-lg ${isOpen ? `bg-${win.accent}-100` : "bg-slate-100"}`}
+                  >
+                    {win.icon}
+                  </span>
                   {win.label}
                 </div>
-                <p className="text-2xl font-black text-slate-900 tracking-tighter">
+                <p className="text-3xl font-black text-slate-900 tracking-tighter">
                   {win.range}
                 </p>
               </div>
 
               <div
                 className={`
-                w-10 h-10 rounded-2xl flex items-center justify-center border transition-all
+                w-12 h-12 rounded-2xl flex items-center justify-center border-2 transition-all duration-500
                 ${
                   isOpen
-                    ? `bg-${win.accent}-50 border-${win.accent}-100 text-${win.accent}-600`
+                    ? `bg-white border-white shadow-xl text-blue-600`
                     : "bg-slate-50 border-slate-100 text-slate-300"
                 }
               `}
               >
                 {isOpen ? (
-                  <Unlock size={16} strokeWidth={3} />
+                  <Unlock
+                    size={20}
+                    strokeWidth={3}
+                    className="animate-in fade-in zoom-in duration-500"
+                  />
                 ) : (
-                  <Lock size={16} strokeWidth={3} />
+                  <Lock size={20} strokeWidth={3} />
                 )}
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <span>
                   {isFuture
-                    ? "Opening Soon"
+                    ? "Status: Opening Soon"
                     : isOpen
-                      ? "Window Active"
-                      : "Cycle Ended"}
+                      ? "Status: Active Window"
+                      : "Status: Cycle Ended"}
                 </span>
-                <span>
+                <span className={isOpen ? "text-slate-900" : ""}>
                   {isOpen
-                    ? `Day ${daysIntoWindow} of ${totalWindowDays}`
-                    : `Day ${day}`}
+                    ? `Progress: Day ${daysIntoWindow} / ${totalWindowDays}`
+                    : `Current: Day ${day}`}
                 </span>
               </div>
-              <div className="h-2 w-full bg-slate-100/50 rounded-full overflow-hidden border border-white/20">
+
+              {/* Progress Track: Indented 'Soft UI' look */}
+              <div className="h-3 w-full bg-slate-200/50 rounded-full overflow-hidden p-[1px] border border-white/20 shadow-inner">
                 <div
                   className={`h-full transition-all duration-1000 ease-out rounded-full ${
-                    isOpen ? `bg-${win.accent}-500 shadow-lg` : "bg-slate-300"
+                    isOpen
+                      ? `bg-${win.accent}-500 shadow-[0_0_15px_rgba(var(--${win.accent}-rgb),0.5)]`
+                      : "bg-slate-300"
                   }`}
-                  style={{ width: `${progress}%` }}
+                  style={{
+                    width: `${progress}%`,
+                    /* If using tailwind colors, consider specific glow shadows based on accent */
+                    boxShadow: isOpen
+                      ? `0 0 12px var(--color-${win.accent}-500)`
+                      : "none",
+                  }}
                 />
               </div>
             </div>

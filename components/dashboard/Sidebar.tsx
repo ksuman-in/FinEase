@@ -9,6 +9,7 @@ import {
   PieChart,
   LogOut,
   ShieldCheck,
+  ChevronRight,
 } from "lucide-react";
 import { logoutAction } from "@/lib/actions/auth";
 import { UserType } from "@prisma/client";
@@ -40,8 +41,8 @@ export default function Sidebar({
   };
 
   return (
-    <div className="flex flex-col h-full justify-between p-4">
-      <div className="space-y-2">
+    <div className="flex flex-col h-full justify-between p-4 relative z-30">
+      <div className="space-y-3">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -55,54 +56,68 @@ export default function Sidebar({
               key={item.name}
               href={item.href}
               className={`
-                flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all group
+                flex items-center justify-between px-5 py-4 rounded-2xl text-sm font-bold transition-all duration-300 group relative
                 ${
                   isActive
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                    : "text-app-bg hover:bg-white/5 hover:text-slate-200"
+                    ? "bg-white/60 text-slate-900 shadow-sm border border-white"
+                    : "text-slate-500 hover:bg-white/30 hover:text-slate-900"
                 }
               `}
               {...(closeSidebar && { onClick: closeSidebar })}
             >
-              <div className="flex items-center gap-3">
-                <Icon
-                  size={18}
-                  className={
-                    isActive ? "text-white" : "group-hover:text-blue-400"
-                  }
-                />
-                <span className="font-bold ">{item.name}</span>
+              <div className="flex items-center gap-4 relative z-10">
+                <div
+                  className={`
+                  p-2 rounded-xl transition-all duration-300
+                  ${isActive ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "bg-transparent text-slate-400 group-hover:text-blue-500"}
+                `}
+                >
+                  <Icon size={18} strokeWidth={2.5} />
+                </div>
+                <span
+                  className={`tracking-tight ${isActive ? "font-black" : "font-bold"}`}
+                >
+                  {item.name}
+                </span>
               </div>
 
+              {isActive && (
+                <ChevronRight
+                  size={14}
+                  className="text-slate-400 animate-in slide-in-from-left-2"
+                />
+              )}
+
               {isAdminLink && isAdmin && pendingCount && pendingCount > 0 && (
-                <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-lg shadow-lg border border-white">
                   {pendingCount}
                 </span>
               )}
             </Link>
           );
         })}
+
         {isAdmin && (
-          <Link
-            href="/admin"
-            {...(closeSidebar && { onClick: closeSidebar })}
-            className={
-              "flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold transition-all group text-app-bg hover:bg-white/5 hover:text-slate-200"
-            }
-          >
-            <div className="flex items-center gap-3">
-              <ShieldCheck size={18} className="group-hover:text-blue-400" />
-              <span className="font-bold uppercase">Return to Admin</span>
-            </div>
-          </Link>
+          <div className="pt-4 mt-4 border-t border-white/40">
+            <Link
+              href="/admin"
+              {...(closeSidebar && { onClick: closeSidebar })}
+              className="flex items-center gap-4 px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-white/30 hover:text-slate-900 transition-all group"
+            >
+              <div className="p-2 bg-slate-100 rounded-xl group-hover:bg-blue-50 transition-colors">
+                <ShieldCheck size={16} className="group-hover:text-blue-500" />
+              </div>
+              <span>Return to Admin</span>
+            </Link>
+          </div>
         )}
       </div>
 
       <button
         onClick={handleLogout}
-        className="flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-bold text-rose-500 hover:bg-rose-500/10 transition-all"
+        className="flex items-center gap-4 px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] text-rose-500 hover:bg-rose-50 transition-all border border-transparent hover:border-rose-100 mt-auto"
       >
-        <LogOut size={18} />
+        <LogOut size={18} strokeWidth={3} />
         Logout
       </button>
     </div>

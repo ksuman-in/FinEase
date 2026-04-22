@@ -7,7 +7,7 @@ import { settleMonthlyPaymentAction } from "@/lib/actions/settleMonthlyPaymentAc
 import { generatInformations } from "@/utils/constant";
 import { repayPrincipalAction } from "@/lib/actions/repayPrincipalAction";
 import { getPaymentWindowStatus } from "@/lib/utils/helper";
-import { Plus } from "lucide-react";
+import { Plus, Zap, ShieldCheck } from "lucide-react";
 import { requestTopUpAction } from "@/lib/actions/requestTopUpAction";
 
 interface LoanProps {
@@ -39,10 +39,12 @@ export default function LoanButton({
 
   const [isOpenModal, openLoanModal] = useState(false);
   const [mode, setMode] = useState<TransactionMode>(TransactionType.CONTRIB);
+
   const openContributionModal = (transType: string) => {
     openLoanModal(true);
     setMode(transType as TransactionMode);
   };
+
   const handleInterestAndcontribution = async ({
     amount,
     description,
@@ -81,42 +83,51 @@ export default function LoanButton({
       return response as { success?: boolean; error?: string };
     }
   };
+
   return (
-    <div className="flex flex-col gap-4 mt-8">
+    <div className="flex flex-col gap-5 mt-8 relative z-20">
       <div className="flex gap-4">
-        {/* INTEREST BUTTON */}
+        {/* INTEREST BUTTON: Refined Milk Glass Style */}
         <button
           disabled={!isInterestWindow}
-          className={`flex-1 h-14 rounded-2xl font-black transition-all text-xs uppercase tracking-widest ${
-            isInterestWindow
-              ? "bg-white text-blue-600 border-2 border-blue-600 cursor-pointer hover:bg-blue-600 hover:text-white active:scale-95"
-              : "bg-slate-50 text-slate-400 border border-slate-100 cursor-not-allowed"
-          }`}
           onClick={() => openContributionModal(TransactionType.CONTRIB)}
+          className={`flex-1 h-16 rounded-[1.5rem] font-black transition-all text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 border-2 ${
+            isInterestWindow
+              ? "bg-white border-blue-600 text-blue-600 shadow-lg shadow-blue-500/10 hover:bg-blue-600 hover:text-white hover:scale-[1.02] active:scale-95 cursor-pointer"
+              : "bg-slate-100/50 border-slate-200 text-slate-400 cursor-not-allowed opacity-60"
+          }`}
         >
-          {isInterestWindow ? "Pay Interest" : "Window Closed"}
+          <Zap
+            size={14}
+            strokeWidth={3}
+            className={isInterestWindow ? "animate-pulse" : ""}
+          />
+          {isInterestWindow ? "Pay Interest" : "Closed"}
         </button>
 
-        {/* PRINCIPAL BUTTON */}
+        {/* PRINCIPAL BUTTON: Refined Milk Glass Style */}
         <button
           disabled={!isPrincipalWindow}
-          className={`flex-1 h-14 rounded-2xl font-black transition-all text-xs uppercase tracking-widest ${
-            isPrincipalWindow
-              ? "bg-white text-slate-900 border-2 border-slate-900 cursor-pointer hover:bg-slate-900 hover:text-white active:scale-95"
-              : "bg-slate-50 text-slate-400 border border-slate-100 cursor-not-allowed"
-          }`}
           onClick={() => openContributionModal(TransactionType.PRIN_REPAY)}
+          className={`flex-1 h-16 rounded-[1.5rem] font-black transition-all text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 border-2 ${
+            isPrincipalWindow
+              ? "bg-white border-slate-900 text-slate-900 shadow-lg shadow-slate-900/10 hover:bg-slate-900 hover:text-white hover:scale-[1.02] active:scale-95 cursor-pointer"
+              : "bg-slate-100/50 border-slate-200 text-slate-400 cursor-not-allowed opacity-60"
+          }`}
         >
-          {isPrincipalWindow ? "Pay Principal" : "Window Closed"}
+          <ShieldCheck size={14} strokeWidth={3} />
+          {isPrincipalWindow ? "Pay Principal" : "Closed"}
         </button>
       </div>
 
-      {/* TOP-UP BUTTON */}
+      {/* TOP-UP BUTTON: Dominant Dark Anchor Action */}
       <button
         onClick={() => openContributionModal(TransactionType.TOP_UP)}
-        className="w-full h-14 bg-slate-900 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-600 transition-all shadow-xl shadow-slate-200 active:scale-[0.98] text-xs uppercase tracking-widest"
+        className="w-full h-16 bg-slate-900 text-white font-black rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-2xl shadow-slate-900/20 active:scale-[0.98] text-[10px] uppercase tracking-[0.2em] group"
       >
-        <Plus className="w-5 h-5 text-white" />
+        <div className="p-1.5 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
+          <Plus className="w-4 h-4 text-white" strokeWidth={3} />
+        </div>
         Request Loan Top-up
       </button>
 

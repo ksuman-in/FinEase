@@ -3,124 +3,92 @@ import {
   Users,
   TrendingUp,
   HandCoins,
-  Fingerprint,
-  CheckCircle2,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/ui/logo";
 
 export default function DisclaimerLanding() {
   return (
-    <div className="bg-slate-950 min-h-screen selection:bg-blue-500/30 font-sans">
-      <nav className="fixed top-0 w-full z-50 px-6 py-6 border-b border-white/5 bg-slate-950/50 backdrop-blur-xl">
+    <div className="min-h-screen selection:bg-blue-500/10 font-sans dashboard-bg text-slate-900 relative overflow-x-hidden">
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Large White Organic Sphere - Top Left */}
+        <div className="absolute top-[-15%] left-[-10%] w-[70%] h-[70%] rounded-full bg-white opacity-80 blur-[80px]" />
+
+        {/* Medium Soft Sphere - Bottom Right */}
+        <div className="absolute bottom-[5%] right-[-5%] w-[50%] h-[50%] rounded-full bg-slate-300/40 blur-[100px]" />
+
+        {/* Subtle Accent Glow */}
+        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-blue-100/30 blur-[80px]" />
+      </div>
+
+      <nav className="fixed top-0 w-full z-50 px-4 py-3 glass-nav transition-all duration-300">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <Logo />
-          <div className="hidden md:flex items-center gap-6 text-xs font-bold text-slate-400 uppercase tracking-widest">
+          <div className="flex gap-4">
             <span className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-              System Online
+              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+              Vault Protocol Active
             </span>
           </div>
         </div>
       </nav>
 
-      <section className="relative flex flex-col items-center justify-center pt-44 pb-20 px-6 text-center overflow-hidden">
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-150 h-75 bg-blue-600/20 blur-[120px] rounded-full opacity-50" />
-
-        <div className="max-w-4xl space-y-10 relative z-10">
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-            <TrendingUp className="w-4 h-4 text-blue-400" />
-            <span className="text-xs font-bold text-slate-300 uppercase tracking-[0.2em]">
-              Target Milestone: <span className="text-white">₹1,00,00,000</span>
+      <section className="relative z-10 flex flex-col items-center justify-center pt-48 pb-20 px-6 text-center">
+        <div className="max-w-4xl space-y-10">
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl glass-morphism border border-white/80">
+            <TrendingUp className="w-4 h-4 text-blue-600" />
+            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em]">
+              Target: <span className="text-slate-900">₹1,00,00,000</span>
             </span>
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white leading-[0.85]">
-            Secure Wealth. <br />
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 via-indigo-400 to-purple-400">
-              Shared Trust.
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-slate-900 leading-[0.85]">
+            VaultEase. <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-700 via-slate-900 to-slate-700">
+              Modern Trust.
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            Welcome to the internal{" "}
-            <span className="text-white font-bold">FinEase</span> gateway. A
-            private financial ecosystem for the Power 10 members to synchronize
-            ledgers and manage peer-loans.
+          <p className="text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto font-medium">
+            The internal gateway for the{" "}
+            <span className="text-slate-900 font-bold">Power 10</span>. A
+            professional financial ecosystem for shared wealth management.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+          <div className="pt-6">
             <Link
               href="/login"
-              className="w-full sm:w-auto px-10 py-5 bg-white text-black font-black rounded-2xl hover:scale-105 transition-all flex items-center justify-center gap-2 shadow-2xl shadow-white/10"
+              className="px-10 py-5 bg-slate-900 text-white font-bold rounded-2xl hover:scale-105 transition-all flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl mx-auto w-fit"
             >
-              Enter Portal
+              Enter Vault
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <section className="relative z-10 max-w-6xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-3 gap-8">
         <FeatureCard
-          icon={<Users className="text-blue-500" />}
+          icon={<Users className="text-slate-900" />}
           title="The Power 10"
           desc="Exclusive 10-member structure designed for high-trust group accountability."
         />
         <FeatureCard
-          icon={<HandCoins className="text-emerald-500" />}
+          icon={<HandCoins className="text-slate-900" />}
           title="Peer Lending"
-          desc="Real-time loan management with automated interest and repayment tracking."
+          desc="Integrated loan management with automated repayment tracking."
         />
         <FeatureCard
-          icon={<Fingerprint className="text-purple-500" />}
-          title="Vault Security"
-          desc="Member-only access with AES-256 encryption and immutable transaction logs."
+          icon={<ShieldCheck className="text-slate-900" />}
+          title="Security First"
+          desc="Immutable transaction logs and AES-256 encrypted member data."
         />
       </section>
 
-      <section className="max-w-4xl mx-auto px-6 py-20">
-        <div className="relative p-10 bg-white/5 border border-white/10 rounded-[3rem] overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-blue-500/50 to-transparent" />
-
-          <div className="flex flex-col md:flex-row gap-10 items-center">
-            <div className="md:w-1/2">
-              <h3 className="text-2xl font-black text-white mb-4">
-                Access Terms
-              </h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                By entering the{" "}
-                <span className="text-blue-400 font-bold">FinEase</span> portal,
-                you agree to keep all group financial data confidential and
-                acknowledge that peer-loans are private agreements.
-              </p>
-            </div>
-
-            <div className="md:w-1/2 grid grid-cols-1 gap-4">
-              {[
-                "Verified Member Only",
-                "End-to-End Encryption",
-                "Private Ledger Logs",
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 text-sm font-bold text-slate-200"
-                >
-                  <CheckCircle2 className="w-4 h-4 text-blue-500" />
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <footer className="py-12 flex flex-col items-center gap-4">
-        <div className="opacity-30 grayscale scale-75">
-          <Logo showIcon={false} />
-        </div>
-        <p className="text-[10px] font-bold text-slate-600 uppercase ">
-          &copy; 2026 FinEase Internal Internal Use Only
+      <footer className="relative z-10 py-12 flex flex-col items-center gap-4">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          &copy; 2026 VaultEase // Internal Use Only
         </p>
       </footer>
     </div>
@@ -137,12 +105,17 @@ function FeatureCard({
   desc: string;
 }) {
   return (
-    <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] hover:border-blue-500/30 transition-all group">
-      <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center mb-6">
+    /* glass-morphism class now uses the "Milk" settings below */
+    <div className="glass-morphism rounded-[2.5rem] p-10 relative group border border-white/60 transition-all hover:translate-y-[-5px]">
+      <div className="w-14 h-14 rounded-2xl bg-white/40 border border-white/80 flex items-center justify-center mb-8 shadow-sm">
         {icon}
       </div>
-      <h4 className="text-lg font-black text-white mb-2">{title}</h4>
-      <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+      <h4 className="text-xl font-bold text-slate-900 mb-3 tracking-tight">
+        {title}
+      </h4>
+      <p className="text-slate-500 text-sm leading-relaxed font-medium">
+        {desc}
+      </p>
     </div>
   );
 }
