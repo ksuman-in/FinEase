@@ -82,7 +82,7 @@ export default function DisclaimerLanding() {
         <FeatureCard
           icon={<ShieldCheck className="text-slate-900" />}
           title="Security First"
-          desc="Immutable transaction logs and AES-256 encrypted member data."
+          desc="Secure transaction records and protected member data."
         />
       </section>
 
@@ -105,7 +105,6 @@ function FeatureCard({
   desc: string;
 }) {
   return (
-    /* glass-morphism class now uses the "Milk" settings below */
     <div className="glass-morphism rounded-[2.5rem] p-10 relative group border border-white/60 transition-all hover:translate-y-[-5px]">
       <div className="w-14 h-14 rounded-2xl bg-white/40 border border-white/80 flex items-center justify-center mb-8 shadow-sm">
         {icon}

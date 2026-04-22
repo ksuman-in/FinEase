@@ -50,12 +50,10 @@ export function PaymentStatusTimeline({
         return (
           <div
             key={win.label}
-            /* Refactored to Milk Glass: Added glass-morphism, white border, and deep shadows */
             className={`glass-morphism p-8 rounded-[3rem] relative transition-all duration-700 border border-white
               ${isOpen ? "opacity-100 shadow-2xl scale-100" : "opacity-60 grayscale-[0.6] scale-[0.98] border-white/40"}
             `}
           >
-            {/* Top light highlight for 3D effect */}
             <div className="absolute inset-0 rounded-[3rem] border-t border-l border-white/60 pointer-events-none" />
 
             <div className="flex justify-between items-start mb-8">
@@ -115,7 +113,6 @@ export function PaymentStatusTimeline({
                 </span>
               </div>
 
-              {/* Progress Track: Indented 'Soft UI' look */}
               <div className="h-3 w-full bg-slate-200/50 rounded-full overflow-hidden p-[1px] border border-white/20 shadow-inner">
                 <div
                   className={`h-full transition-all duration-1000 ease-out rounded-full ${
@@ -125,7 +122,6 @@ export function PaymentStatusTimeline({
                   }`}
                   style={{
                     width: `${progress}%`,
-                    /* If using tailwind colors, consider specific glow shadows based on accent */
                     boxShadow: isOpen
                       ? `0 0 12px var(--color-${win.accent}-500)`
                       : "none",

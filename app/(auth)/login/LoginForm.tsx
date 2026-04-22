@@ -56,12 +56,18 @@ export default function LoginForm() {
           <input
             {...register("email")}
             type="email"
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "login-email-error" : undefined}
             placeholder="Email Address"
             className="w-full p-4 pl-12 bg-white/50 border border-white rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-medium"
           />
         </div>
         {errors.email && (
-          <p className="text-red-600 text-[10px] font-bold uppercase ml-2">
+          <p
+            id="login-email-error"
+            role="alert"
+            className="text-red-600 text-[10px] font-bold uppercase ml-2"
+          >
             {errors.email.message}
           </p>
         )}
@@ -75,18 +81,30 @@ export default function LoginForm() {
             {...register("password")}
             type="password"
             placeholder="Password"
+            aria-invalid={!!errors.password}
+            aria-describedby={
+              errors.password ? "login-password-error" : undefined
+            }
             className="w-full p-4 pl-12 bg-white/50 border border-white rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-medium"
           />
         </div>
         {errors.password && (
-          <p className="text-red-600 text-[10px] font-bold uppercase ml-2">
+          <p
+            id="login-password-error"
+            role="alert"
+            className="text-red-600 text-[10px] font-bold uppercase ml-2"
+          >
             {errors.password.message}
           </p>
         )}
       </div>
 
       {error && (
-        <div className="p-4 glass-morphism bg-red-50/50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-600 text-xs font-bold">
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="p-4 glass-morphism bg-red-50/50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-600 text-xs font-bold"
+        >
           <AlertCircle className="w-4 h-4" />
           {error}
         </div>

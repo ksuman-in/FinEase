@@ -18,9 +18,18 @@ const tailwindConfig = {
           "50%": { transform: "translateX(100%)", width: "40%" },
           "100%": { transform: "translateX(300%)" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "loading-bar": "loading-bar 1.5s infinite ease-in-out",
+        float: "float 4s infinite ease-in-out",
+        shimmer: "shimmer 2s infinite",
       },
     },
   },

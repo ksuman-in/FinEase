@@ -100,7 +100,10 @@ export default function RegisterForm() {
 
       {/* Interactive Password Field */}
       <div className="space-y-1.5">
-        <label className="text-[10px] font-black text-blue-600 uppercase tracking-widest px-1">
+        <label
+          htmlFor="password"
+          className="text-[10px] font-black text-blue-600 uppercase tracking-widest px-1"
+        >
           Create Access Password
         </label>
         <div className="relative group">
@@ -108,6 +111,8 @@ export default function RegisterForm() {
           <input
             {...register("password")}
             type="password"
+            id="password"
+            autoComplete="new-password"
             placeholder="Min. 8 characters"
             className="w-full h-16 pl-12 pr-6 rounded-2xl bg-white/50 border border-white text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-bold placeholder-slate-300"
           />
