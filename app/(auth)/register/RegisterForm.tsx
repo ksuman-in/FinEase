@@ -6,7 +6,7 @@ import * as z from "zod";
 import { useSearchParams } from "next/navigation";
 import { Lock, Mail, Phone, Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
-import { signUpMemberAction } from "@/lib/actions/auth-actions";
+import { signUpMemberAction } from "@/lib/actions/auth/signUpMemberAction";
 
 const activationSchema = z.object({
   password: z
@@ -43,7 +43,11 @@ export default function RegisterForm() {
     setServerError(null);
 
     try {
-      const res = await signUpMemberAction(values, email, phone);
+      const res = await signUpMemberAction({
+        email,
+        password: values.password,
+        phone,
+      });
       if (res?.error) {
         setServerError(res.error);
         setLoading(false);

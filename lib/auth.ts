@@ -2,7 +2,6 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/lib/db";
 import { APIError } from "better-auth/api";
-import { UserType } from "@prisma/client";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -38,24 +37,14 @@ export const auth = betterAuth({
 
       return {
         ...data,
-        role: "MEMBER",
       };
     },
   },
   user: {
     additionalFields: {
-      role: {
-        type: "string",
-        defaultValue: UserType.MEMBER,
-      },
       phoneNumber: {
         type: "string",
         required: true,
-      },
-      groupId: {
-        type: "string",
-        required: false,
-        input: true,
       },
     },
   },

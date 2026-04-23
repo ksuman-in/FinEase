@@ -9,8 +9,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await authGuard();
-  const user = session.user;
+  const { user, membership } = await authGuard();
   const pendingCount = await prisma.memberLoan.count({
     where: { status: "REQUEST" },
   });
@@ -28,7 +27,7 @@ export default async function DashboardLayout({
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar px-4">
-          <Sidebar pendingCount={pendingCount} user={user} />
+          <Sidebar pendingCount={pendingCount} membership={membership} />
         </div>
 
         <div className="p-6 border-t border-white/40">
@@ -41,7 +40,7 @@ export default async function DashboardLayout({
                 {user.name}
               </span>
               <span className="text-[10px] text-slate-500 font-black uppercase mt-1">
-                {user.role}
+                {membership?.role}
               </span>
             </div>
           </div>

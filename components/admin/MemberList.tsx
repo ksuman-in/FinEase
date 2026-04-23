@@ -1,10 +1,9 @@
-// src/components/admin/MemberList.tsx
 import { prisma } from "@/lib/db";
-import { User, Mail, Phone, Calendar } from "lucide-react";
+import { User, Mail, Phone } from "lucide-react";
 
-export default async function MemberList({ groupId }: { groupId: string }) {
+export default async function MemberList() {
   const members = await prisma.user.findMany({
-    where: { groupId },
+    where: {},
     orderBy: { createdAt: "desc" },
   });
 

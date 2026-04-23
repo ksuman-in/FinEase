@@ -1,17 +1,36 @@
-import { authGuard } from "@/lib/auth-utils"; // Your Better Auth guard
-
+import { authGuard } from "@/lib/auth-utils";
+import { prisma } from "@/lib/db"; //
 import TransactionsPageClient from "./TransactionsPageClient";
-import getTransactions from "@/lib/actions/getTransactions";
+import { redirect } from "next/navigation";
 
 export default async function TransactionsPage() {
-  const session = await authGuard();
-  const currentUser = session.user;
+  const { user } = await authGuard();
 
-  const transactions = await getTransactions();
+  const membership = await prisma.membership.findFirst({
+    where: { userId: user.id },
+    select: {
+      groupId: true,
+      role: true,
+      group: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 
-  const serializedData = JSON.parse(JSON.stringify(transactions));
+  if (!membership) redirect("/dashboard");
+
+  const transactions = await prisma.memberTransaction.findMany({
+    where: { groupId: membership.groupId },
+    include: { user: { select: { name: true } } },
+    orderBy: { date: "desc" },
+  });
 
   return (
-    <TransactionsPageClient data={serializedData} currentUser={currentUser} />
+    <TransactionsPageClient
+      data={JSON.parse(JSON.stringify(transactions))}
+      membership={membership}
+    />
   );
 }

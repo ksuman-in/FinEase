@@ -3,8 +3,7 @@ import MobileNav from "./MobileNav";
 import { prisma } from "@/lib/db";
 
 export default async function PageHeader({ action = "" }: { action?: string }) {
-  const session = await authGuard();
-  const user = session.user;
+  const { membership, user } = await authGuard();
 
   const pendingCount = await prisma.memberLoan.count({
     where: {
@@ -17,16 +16,10 @@ export default async function PageHeader({ action = "" }: { action?: string }) {
       {/* 3D Rim Light decoration */}
       <div className="absolute inset-0 rounded-[2rem] border-t border-l border-white/60 pointer-events-none" />
 
-      {/* 
-          Z-INDEX REMOVED FROM INNER DIV: 
-          By removing 'relative z-10' from this wrapper, we prevent 
-          the header from creating a "hard" stacking context that 
-          might fight the modal's backdrop.
-      */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="lg:hidden">
-            <MobileNav user={user} pendingCount={pendingCount} />
+            <MobileNav membership={membership} pendingCount={pendingCount} />
           </div>
           <div className="hidden md:block lg:hidden">
             <h1 className="text-xl font-black tracking-tighter text-slate-900">
@@ -43,7 +36,7 @@ export default async function PageHeader({ action = "" }: { action?: string }) {
                 {user.name}
               </span>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                {user.role?.replace("_", " ") || "Member"}
+                {membership?.role?.replace("_", " ") || "Member"}
               </span>
             </div>
             <div className="w-10 h-10 flex justify-center items-center rounded-2xl bg-slate-900 text-white shadow-lg border border-white/10">

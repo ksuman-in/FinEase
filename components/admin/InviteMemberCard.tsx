@@ -14,7 +14,11 @@ const inviteSchema = z.object({
 
 type InviteFormValues = z.infer<typeof inviteSchema>;
 
-export default function InviteMemberCard({ groupId }: { groupId: string }) {
+export default function InviteMemberCard({
+  groupId,
+}: {
+  groupId: string | undefined;
+}) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
 

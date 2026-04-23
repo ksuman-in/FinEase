@@ -6,10 +6,9 @@ datasource db {
   provider = "postgresql"
 }
 
-enum UserType {
-  ADMIN
+enum GroupRole {
+  OWNER
   MEMBER
-  BORROWER
 }
 
 enum LoanStatus {
@@ -29,8 +28,6 @@ enum TransactionType {
   TOP_UP
 }
 
-// --- Better Auth & Core Business Models ---
-
 model User {
   id            String   @id
   name          String
@@ -40,32 +37,57 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  // Custom FinEase Fields
-  role        UserType @default(MEMBER)
-  phoneNumber String?  @unique
+  // --- THE GATEKEEPER FIELDS ---
+  // Only Super Admin can toggle these. 
+  // If isVerified is false, user sees "Pending" screen.
+  isVerified   Boolean @default(false)
+  isSuperAdmin Boolean @default(false)
 
-  // Relation: As a member of a group
-  groupId String?
-  group   Group?  @relation("GroupMembers", fields: [groupId], references: [id])
+  phoneNumber String? @unique
 
-  // Relation: As the Admin/Owner of a group
-  administeredGroup Group? @relation("GroupAdmin")
-
-  // Financial Relations (Moved from Member)
+  // Relations
+  memberships  Membership[]
   loans        MemberLoan[]
   transactions MemberTransaction[]
-
-  sessions Session[]
-  accounts Account[]
+  sessions     Session[]
+  accounts     Account[]
 
   @@map("user")
 }
 
-// --- Financial Models ---
+model Group {
+  id           String @id @default(cuid())
+  name         String @default("Power 10 Finance")
+  maxMembers   Int    @default(10)
+  interestRate Float  @default(1.0)
+  strategy     String @default("Power 5 Rotation")
+
+  // Relations
+  memberships    Membership[]
+  allowedEmails  AllowedUser[]
+  loans          MemberLoan[]
+  transactions   MemberTransaction[]
+  monthlyReports MonthlyReport[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Membership {
+  id      String    @id @default(cuid())
+  role    GroupRole @default(MEMBER)
+  userId  String
+  groupId String
+  user    User      @relation(fields: [userId], references: [id])
+  group   Group     @relation(fields: [groupId], references: [id])
+
+  @@unique([userId, groupId])
+}
 
 model MemberLoan {
   id           String     @id @default(uuid())
   userId       String
+  groupId      String
   amount       Float
   interestRate Float      @default(1.0)
   status       LoanStatus @default(ACTIVE)
@@ -74,10 +96,8 @@ model MemberLoan {
 
   // Relations
   user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group        Group               @relation(fields: [groupId], references: [id])
   transactions MemberTransaction[]
-
-  groupId String
-  group   Group  @relation(fields: [groupId], references: [id])
 
   @@index([userId])
 }
@@ -86,19 +106,25 @@ model MemberTransaction {
   id          String          @id @default(uuid())
   userId      String
   loanId      String?
+  groupId     String
   amount      Float
   type        TransactionType
   date        DateTime        @default(now())
   description String?
 
   // Relations
-  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  loans   MemberLoan? @relation(fields: [loanId], references: [id])
-  group   Group?      @relation(fields: [groupId], references: [id])
-  groupId String?
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loan  MemberLoan? @relation(fields: [loanId], references: [id])
+  group Group       @relation(fields: [groupId], references: [id])
 
   @@index([userId, date])
   @@index([type])
+}
+
+enum UserType {
+  ADMIN
+  MEMBER
+  BORROWER
 }
 
 model GlobalSettings {
@@ -179,28 +205,6 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
-}
-
-model Group {
-  id           String @id @default(cuid())
-  name         String @default("Power 10 Finance")
-  maxMembers   Int    @default(10)
-  interestRate Float  @default(1.0)
-  strategy     String @default("Power 5 Rotation")
-
-  // The Admin/Agent who manages this specific group
-  adminId String? @unique
-  admin   User?   @relation("GroupAdmin", fields: [adminId], references: [id])
-
-  // Relationships
-  members       User[]              @relation("GroupMembers")
-  allowedEmails AllowedUser[]
-  reports       MonthlyReport[]
-  loans         MemberLoan[]
-  transactions  MemberTransaction[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model AllowedUser {

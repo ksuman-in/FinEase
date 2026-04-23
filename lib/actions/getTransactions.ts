@@ -1,21 +1,21 @@
 "use server";
 
-import { UserType } from "@prisma/client";
+import { GroupRole } from "@prisma/client";
 import { authGuard } from "../auth-utils";
 import { prisma } from "../db";
 
 export default async function getTransactions() {
-  const session = await authGuard();
-  const userId = session.user.id;
-  const isAdmin = session.user.role === UserType.ADMIN;
+  const { user, membership } = await authGuard();
+  const userId = user.id;
+  const isOwner = membership?.role === GroupRole.OWNER;
 
   const transactions = await prisma.memberTransaction.findMany({
-    where: isAdmin ? {} : { userId: userId },
+    where: isOwner ? {} : { userId: userId },
     orderBy: {
       date: "desc",
     },
     include: {
-      user: isAdmin ? { select: { name: true } } : false,
+      user: isOwner ? { select: { name: true } } : false,
     },
   });
   return transactions;

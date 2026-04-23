@@ -2,7 +2,7 @@ import { authGuard } from "@/lib/auth-utils";
 import ProfileCard from "@/components/dashboard/ProfileCard";
 
 export default async function ProfilePage() {
-  const { user } = await authGuard();
+  const { user, membership } = await authGuard();
 
   const displayName = user.name?.trim() || "User";
 
@@ -26,14 +26,14 @@ export default async function ProfilePage() {
             </div>
             <h3 className="text-xl font-bold text-white">{displayName}</h3>
             <span className="mt-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-black uppercase tracking-widest text-blue-400">
-              {user.role || "Member"}
+              {membership?.role || "Member"}
             </span>
           </div>
         </div>
 
         {/* Right: Detailed Info */}
         <div className="md:col-span-2">
-          <ProfileCard user={user} />
+          <ProfileCard user={user} membership={membership} />
         </div>
       </div>
     </div>

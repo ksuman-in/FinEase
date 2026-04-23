@@ -2,7 +2,7 @@
 
 import { authGuard } from "@/lib/auth-utils";
 import { prisma } from "@/lib/db";
-import { LoanStatus, TransactionType, UserType } from "@prisma/client";
+import { GroupRole, LoanStatus, TransactionType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function processLoanAction(
@@ -10,8 +10,8 @@ export async function processLoanAction(
   action: LoanStatus,
   groupId: string,
 ) {
-  const session = await authGuard();
-  if (session.user?.role !== UserType.ADMIN) {
+  const { membership } = await authGuard();
+  if (membership?.role !== GroupRole.OWNER) {
     throw new Error("Forbidden");
   }
 

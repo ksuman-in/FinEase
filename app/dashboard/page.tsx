@@ -7,13 +7,13 @@ import { AgentNudgeCard } from "@/components/dashboard/AgentNudgeCard";
 import { InvestmentSummary } from "@/components/dashboard/InvestmentSummary";
 import { prisma } from "@/lib/db";
 import LoanStatusBanner from "@/components/dashboard/LoanStatusBanner";
-import { LoanStatus, UserType } from "@prisma/client";
+import { GroupRole, LoanStatus } from "@prisma/client";
 import { ShieldAlert } from "lucide-react";
 
 export default async function DashboardPage() {
-  const session = await authGuard();
-  const user = session.user;
-  const hasGroup = !!user.groupId;
+  const { session, user, membership } = await authGuard();
+  const hasGroup = membership?.groupId;
+  const isOwner = membership?.role === GroupRole.OWNER;
   const activeLoanDetails = await activeLoan();
   const isActiveLoan = !!activeLoanDetails?.id;
   const pendingOrCancelled = !isActiveLoan
@@ -67,7 +67,7 @@ export default async function DashboardPage() {
           ) : (
             <EmptyLoanState
               loan={pendingOrCancelled}
-              user={{ ...user, groupId: user.groupId ?? "" }}
+              user={{ ...user, groupId: membership?.groupId }}
             />
           )}
         </div>
@@ -79,7 +79,7 @@ export default async function DashboardPage() {
               <InvestmentSummary />
             </div>
 
-            {user?.role === UserType.ADMIN && (
+            {isOwner && (
               <div className="glass-morphism p-1 rounded-[2.5rem] border border-white/40 overflow-hidden relative">
                 {/* Added a subtle blue glow for the Admin Nudge */}
                 <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 blur-2xl" />

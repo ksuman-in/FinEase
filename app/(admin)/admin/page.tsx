@@ -5,21 +5,29 @@ import { prisma } from "@/lib/db";
 import MemberList from "@/components/admin/MemberList";
 
 export default async function AdminPage() {
-  const session = await authGuard({ adminOnly: true });
-  const adminGroupId = session.user.groupId!;
-
-  // Fetch group name for the header
-  const group = await prisma.group.findUnique({
-    where: { id: adminGroupId },
-    select: { name: true },
+  const { user } = await authGuard();
+  const membership = await prisma.membership.findFirst({
+    where: { userId: user.id },
+    select: {
+      groupId: true,
+      role: true,
+      group: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
+
+  const groupId = membership?.groupId;
 
   return (
     <main className="max-w-6xl mx-auto p-6 space-y-12">
       {/* Header */}
       <header className="space-y-1">
         <h1 className="text-4xl font-black text-white tracking-tighter">
-          {group?.name || "Group"} <span className="text-blue-500">Admin</span>
+          {membership?.group?.name || "Group"}{" "}
+          <span className="text-blue-500">Admin</span>
         </h1>
         <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
           Management Console
@@ -28,7 +36,7 @@ export default async function AdminPage() {
 
       {/* Primary Action: Invite */}
       <section>
-        <InviteMemberCard groupId={adminGroupId} />
+        <InviteMemberCard groupId={groupId} />
       </section>
 
       {/* Member Management: The List */}
@@ -42,7 +50,7 @@ export default async function AdminPage() {
           </span>
         </div>
 
-        <MemberList groupId={adminGroupId} />
+        <MemberList />
       </section>
     </main>
   );

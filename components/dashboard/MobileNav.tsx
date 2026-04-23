@@ -6,11 +6,14 @@ import { Menu, X } from "lucide-react";
 import Sidebar from "./Sidebar";
 
 interface MobileNavProps {
-  user: { role: string | null };
+  membership?: { role: string } | null;
   pendingCount?: number;
 }
 
-export default function MobileNav({ user, pendingCount }: MobileNavProps) {
+export default function MobileNav({
+  membership,
+  pendingCount,
+}: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -44,7 +47,7 @@ export default function MobileNav({ user, pendingCount }: MobileNavProps) {
           <div className="flex-1 overflow-y-auto py-4">
             <Sidebar
               pendingCount={pendingCount}
-              user={user}
+              membership={membership}
               closeSidebar={() => setOpen(false)}
             />
           </div>

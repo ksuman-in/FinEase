@@ -14,10 +14,10 @@ export default async function requestLoanAction({
 }: {
   amount: number;
   description: string;
-  groupId: string | null;
+  groupId: string | null | undefined;
 }) {
-  const session = await authGuard();
-  const userId = session.user.id;
+  const { user } = await authGuard();
+  const userId = user.id;
 
   if (!userId || !groupId) throw new Error("Unauthorized");
 

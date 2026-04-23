@@ -21,7 +21,6 @@ export default function AdminPendingRequests({
     id: string;
     action: LoanStatus;
   } | null>(null);
-  console.log({ requests });
   const handleAction = async (
     loanId: string,
     action: LoanStatus,
