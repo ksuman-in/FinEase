@@ -16,10 +16,12 @@ export default async function requestLoanAction({
   description: string;
   groupId: string | null | undefined;
 }) {
-  const { user } = await authGuard();
+  if (!groupId) throw new Error("Unauthorized");
+
+  const { user } = await authGuard(groupId);
   const userId = user.id;
 
-  if (!userId || !groupId) throw new Error("Unauthorized");
+  if (!userId) throw new Error("Unauthorized");
 
   const availableCash = await getTotalInHand();
 
@@ -31,6 +33,7 @@ export default async function requestLoanAction({
   const existingActiveLoan = await prisma.memberLoan.findFirst({
     where: {
       userId: userId,
+      groupId,
       status: LoanStatus.REQUEST,
     },
   });

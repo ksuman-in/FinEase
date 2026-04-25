@@ -16,12 +16,26 @@ export async function inviteMemberAction(
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + EXPIRES_IN_DAYS);
 
-  const allowedUser = await prisma.allowedUser.create({
-    data: {
+  const newToken = crypto.randomUUID();
+
+  const allowedUser = await prisma.allowedUser.upsert({
+    where: {
+      email_groupId: {
+        email: email.toLowerCase(),
+        groupId: groupId,
+      },
+    },
+    update: {
+      token: newToken,
+      expiresAt: expiresAt,
+      phoneNumber: phone,
+    },
+    create: {
       email: email.toLowerCase(),
       phoneNumber: phone,
       groupId: groupId,
-      expiresAt,
+      token: newToken,
+      expiresAt: expiresAt,
     },
   });
 

@@ -223,5 +223,6 @@ model AllowedUser {
   createdAt   DateTime @default(now())
   expiresAt   DateTime
 
-  @@index([email, phoneNumber]) // Speeds up lookup during registration
+  @@unique([email, groupId])
+  @@unique([phoneNumber, groupId])
 }

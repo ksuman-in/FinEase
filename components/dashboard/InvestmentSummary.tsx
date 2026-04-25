@@ -6,8 +6,8 @@ import { TransactionType } from "@prisma/client";
 import { TrendingUp, Target, Calendar, ShieldCheck } from "lucide-react";
 
 export async function InvestmentSummary({ groupId }: { groupId: string }) {
-  const session = await authGuard(groupId);
-  const userId = session.user.id;
+  const { user } = await authGuard(groupId);
+  const userId = user.id;
 
   const nextReview = addYearMonthDay({ month: 1 });
 
