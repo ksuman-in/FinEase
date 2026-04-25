@@ -1,11 +1,10 @@
-import { UserType } from "@prisma/client";
+import { GroupRole } from "@prisma/client";
 import { authGuard } from "../auth-utils";
 import { prisma } from "../db";
 
 export default async function userDetails() {
-  const session = await authGuard();
-  const user = session.user;
-  const isAdmin = session.user.role === UserType.ADMIN;
+  const { membership, user } = await authGuard();
+  const isAdmin = membership?.role === GroupRole.OWNER;
 
   if (user.id) {
     if (isAdmin) {

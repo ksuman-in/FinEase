@@ -2,11 +2,17 @@ import { HandCoins, Target, TrendingUp, Zap, ShieldCheck } from "lucide-react";
 import RegisterForm from "./RegisterForm";
 import Link from "next/link";
 import { VaultLogoIcon } from "@/components/ui/logo-icon";
+import { getInvitationDetailsAction } from "@/lib/actions/auth/getInvitationDetailsAction";
 
-export default function RegisterPage() {
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token: string }>;
+}) {
+  const { token } = await searchParams;
+  const invitation = await getInvitationDetailsAction(token);
   return (
     <div className="min-h-screen dashboard-bg relative overflow-x-hidden text-slate-900 font-sans">
-      {/* Organic Spheres Background (image_55c963.jpg style) */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-15%] right-[-5%] w-[60%] h-[60%] rounded-full bg-white opacity-80 blur-[100px]" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-slate-300/30 blur-[120px]" />
@@ -14,7 +20,6 @@ export default function RegisterPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left Column: Value Proposition */}
           <div className="space-y-12">
             <div className="space-y-6">
               <VaultLogoIcon /> {/* Using the bigger logo we designed */}
@@ -31,7 +36,6 @@ export default function RegisterPage() {
               </p>
             </div>
 
-            {/* Feature Grid with Milk Glass */}
             <div className="grid sm:grid-cols-2 gap-4">
               {[
                 {
@@ -67,15 +71,11 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Right Column: Form Container */}
           <div className="relative">
-            {/* The "Halo" - This makes the shadow look 10x better */}
             <div className="absolute inset-0 bg-blue-500/5 blur-[120px] -z-10" />
 
-            {/* Main Card */}
             <div className="glass-morphism rounded-[3rem] p-2 border border-white shadow-2xl relative z-10">
               <div className="bg-white/40 rounded-[2.8rem] p-8 lg:p-12">
-                {/* Form Content */}
                 <div className="mb-10">
                   <h3 className="text-3xl font-black text-slate-900 tracking-tight">
                     Create Account
@@ -85,7 +85,19 @@ export default function RegisterPage() {
                   </p>
                 </div>
 
-                <RegisterForm />
+                <RegisterForm
+                  token={token}
+                  initialData={
+                    invitation.error
+                      ? null
+                      : {
+                          email: invitation.email!,
+                          phoneNumber: invitation.phoneNumber!,
+                          groupId: invitation.groupId!,
+                        }
+                  }
+                  serverError={invitation.error || null}
+                />
                 <p className="mt-8 text-center text-xs text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
                   Secured by Power 10 Protocol <br />
                   <Link

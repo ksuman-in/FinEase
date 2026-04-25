@@ -1,20 +1,16 @@
 import { LoanStatus, TransactionType } from "@prisma/client";
-import { authGuard } from "../auth-utils";
 import { prisma } from "../db";
 
-export default async function getTotalInHand() {
-  const session = await authGuard();
-  const groupId = session.user.groupId;
-
+export default async function getTotalInHand(groupId?: string) {
   if (!groupId) {
     throw new Error("Unauthorized");
   }
 
-  const [totalActiveLoan, totalContribution] = await Promise.all([
+  const [totalDisbursed, totalContribution, totalInterest] = await Promise.all([
     prisma.memberLoan.aggregate({
       where: {
         groupId,
-        status: LoanStatus.ACTIVE,
+        status: { in: [LoanStatus.ACTIVE] },
       },
       _sum: { amount: true },
     }),
@@ -25,10 +21,18 @@ export default async function getTotalInHand() {
       },
       _sum: { amount: true },
     }),
+    prisma.memberTransaction.aggregate({
+      where: {
+        groupId,
+        type: TransactionType.INT_PAID,
+      },
+      _sum: { amount: true },
+    }),
   ]);
 
-  const contributions = totalContribution._sum.amount ?? 0;
-  const loans = totalActiveLoan._sum.amount ?? 0;
-
-  return Number(contributions) - Number(loans);
+  const contributions = Number(totalContribution._sum.amount ?? 0);
+  const interests = Number(totalInterest._sum.amount ?? 0);
+  const disbursed = Number(totalDisbursed._sum.amount ?? 0);
+  // In Hand = (Money In) - (Money Out)
+  return contributions + interests - disbursed;
 }

@@ -15,9 +15,11 @@ export async function repayPrincipalAction({
   description?: string;
 }) {
   try {
-    const session = await authGuard();
-    const userId = session.user.id;
-    const groupId = session.user.groupId;
+    const { user, membership } = await authGuard();
+    const userId = user.id;
+    const groupId = membership?.groupId;
+
+    if (!userId || !groupId) throw new Error("Unauthorized");
 
     const result = await prisma.$transaction(async (tx) => {
       const activeLoan = await tx.memberLoan.findUnique({

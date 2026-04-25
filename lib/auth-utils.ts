@@ -1,13 +1,12 @@
 import { auth } from "@/lib/auth";
-import { UserType } from "@prisma/client";
+import { GroupRole } from "@prisma/client";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
+import { prisma } from "./db";
 
 /**
- * Get the current session on the server.
- * Wrapped in React 'cache' to prevent multiple DB calls if
- * used in both layout and page.
+ * Get current session.
  */
 export const getSession = cache(async () => {
   try {
@@ -22,56 +21,111 @@ export const getSession = cache(async () => {
 });
 
 /**
- * Ensures the user is authenticated.
- * Redirects to login if no session exists.
+ * GATEKEEPER: Ensures user is authenticated AND verified.
+ * If authenticated but NOT verified, redirects to a pending page.
  */
-export const requireAuth = async () => {
+export const requireVerifiedAuth = async () => {
   const session = await getSession();
 
   if (!session) {
     redirect("/login");
   }
 
-  return session;
+  // Fetch latest user status from DB (session might be stale)
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isVerified: true, isSuperAdmin: true },
+  });
+
+  if (!user?.isVerified && !user?.isSuperAdmin) {
+    redirect("/onboarding");
+  }
+
+  return { session, user };
 };
 
 /**
- * Ensures the user has a specific role (e.g., 'admin').
- * Redirects to dashboard if they don't have permission.
+ * SUPER ADMIN GUARD: Only allows the Architect/Global Admin.
  */
-export const requireRole = async (role: "ADMIN" | "user") => {
-  const session = await requireAuth();
+export const requireSuperAdmin = async () => {
+  const { session, user } = await requireVerifiedAuth();
 
-  if (session.user.role !== role) {
-    redirect("/");
+  if (!user.isSuperAdmin) {
+    redirect("/dashboard");
   }
 
-  return session;
+  return { session, user };
 };
 
-export const authGuard = cache(async (options?: { adminOnly?: boolean }) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+/**
+ * GROUP OWNER GUARD: Ensures user is the OWNER of a specific group.
+ * Used for loan approvals and group settings.
+ */
+export const requireGroupOwner = async (groupId: string) => {
+  const { session } = await requireVerifiedAuth();
+
+  const membership = await prisma.membership.findUnique({
+    where: {
+      userId_groupId: {
+        userId: session.user.id,
+        groupId: groupId,
+      },
+    },
   });
 
-  if (!session) {
-    redirect("/login");
+  if (membership?.role !== GroupRole.OWNER) {
+    redirect("/dashboard");
   }
 
-  if (options?.adminOnly) {
-    const isNotAdmin = session.user.role !== UserType.ADMIN;
-    const hasNoGroup = !session.user.groupId;
+  return { session, membership };
+};
 
-    if (isNotAdmin) {
-      console.log("DEBUG: Redirecting because role is:", session.user.role);
-      redirect("/dashboard");
+export const authGuard = cache(
+  async (
+    groupId?: string,
+    options?: { superAdminOnly?: boolean; verifiedOnly?: boolean },
+  ) => {
+    const session = await getSession();
+    if (!session?.user) redirect("/login");
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    if (!user) redirect("/login");
+
+    if (user.isSuperAdmin) {
+      return {
+        session,
+        user,
+        membership: { role: "OWNER", groupId: groupId || "admin" },
+      };
     }
 
-    if (hasNoGroup) {
-      console.log("DEBUG: Redirecting because groupId is missing");
-      redirect("/dashboard");
+    if (options?.verifiedOnly === true && !user.isVerified) {
+      redirect("/onboarding");
     }
-  }
 
-  return session;
-});
+    let membership = null;
+
+    if (groupId) {
+      membership = await prisma.membership.findUnique({
+        where: {
+          userId_groupId: {
+            userId: user.id,
+            groupId: groupId,
+          },
+        },
+      });
+
+      if (!membership && !user.isSuperAdmin) {
+        redirect("/dashboard");
+      }
+    } else {
+      membership = await prisma.membership.findFirst({
+        where: { userId: user.id },
+      });
+    }
+    return { session, user, membership };
+  },
+);

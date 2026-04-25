@@ -7,8 +7,11 @@ import { TransactionType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function saveTransactionAction(data: SaveTransactionFormTypes) {
-  const session = await authGuard();
-  const userId = data.userId || session.user.id;
+  const { user, membership } = await authGuard();
+  const userId = data.userId || user.id;
+  const groupId = membership?.groupId;
+
+  if (!groupId) throw new Error("Unauthorized");
 
   const formattedDate = data.date ? new Date(data.date) : new Date();
 
@@ -24,6 +27,7 @@ export async function saveTransactionAction(data: SaveTransactionFormTypes) {
       data: {
         ...cleanData,
         userId: userId,
+        groupId,
       },
     });
   }

@@ -2,24 +2,48 @@
 
 import { prisma } from "@/lib/db";
 import { Resend } from "resend";
+import { requireGroupOwner } from "../auth-utils";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function inviteMemberAction(
   email: string,
   phone: string,
-  groupId: string,
+  groupId: string | undefined,
 ) {
-  await prisma.allowedUser.create({
-    data: {
+  if (!groupId) throw new Error("Unauthorized");
+
+  await requireGroupOwner(groupId);
+
+  const EXPIRES_IN_DAYS = 7;
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + EXPIRES_IN_DAYS);
+
+  const newToken = crypto.randomUUID();
+
+  const allowedUser = await prisma.allowedUser.upsert({
+    where: {
+      email_groupId: {
+        email: email.toLowerCase(),
+        groupId: groupId,
+      },
+    },
+    update: {
+      token: newToken,
+      expiresAt: expiresAt,
+      phoneNumber: phone,
+    },
+    create: {
       email: email.toLowerCase(),
       phoneNumber: phone,
       groupId: groupId,
+      token: newToken,
+      expiresAt: expiresAt,
     },
   });
 
   const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
-  const inviteLink = `${baseUrl}/register?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`;
+  const inviteLink = `${baseUrl}/register?token=${encodeURIComponent(allowedUser.token)}`;
 
   // try {
   //   await resend.emails.send({

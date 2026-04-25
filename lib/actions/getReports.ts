@@ -5,10 +5,10 @@ import { startOfMonth, endOfMonth } from "date-fns";
 import getTotalInHand from "./getTotalInHand";
 
 export async function getMonthlyReport() {
-  const session = await authGuard();
-  const groupId = session.user.groupId;
+  const { membership } = await authGuard();
+  const groupId = membership?.groupId;
 
-  if (!groupId) return [];
+  if (!groupId) throw new Error("Unauthorized");
 
   // Principal Recovered
   // Total Members Fund
@@ -62,7 +62,7 @@ export async function getMonthlyReport() {
   });
 
   const groupLoans = await prisma.memberLoan.findMany({
-    where: { user: { groupId } },
+    where: { groupId },
     select: { amount: true, status: true },
   });
 
@@ -94,6 +94,6 @@ export async function getMonthlyReport() {
   );
 
   return {
-    memberCount: await prisma.user.count({ where: { groupId } }),
+    memberCount: await prisma.membership.count({ where: { groupId } }),
   };
 }

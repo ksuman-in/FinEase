@@ -17,8 +17,6 @@ export default async function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="bg-[#E5E7EB] text-slate-900 antialiased min-h-screen">
-        {/* Notice we use a light grey (Slate-200) background instead of black */}
-
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
           {/* Large Organic "Spheres" */}
           <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[80%] rounded-full bg-white opacity-80 blur-[100px]" />

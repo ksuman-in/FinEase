@@ -15,7 +15,7 @@ export function EmptyLoanState({
   user,
 }: {
   loan: { status: string; amount: number } | null;
-  user: { groupId: string };
+  user: { groupId: string | undefined | null };
 }) {
   const isAlreadyLoanRequested = loan?.status === LoanStatus.REQUEST;
   const [activeMode, setActiveMode] = useState<TransactionMode | null>(null);

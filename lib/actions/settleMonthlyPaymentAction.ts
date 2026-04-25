@@ -16,11 +16,11 @@ export async function settleMonthlyPaymentAction({
   contributionAmount: number;
   description: string;
 }) {
-  const session = await authGuard();
-  const userId = session.user.id;
-  const groupId = session.user.groupId;
+  const { user, membership } = await authGuard();
+  const userId = user.id;
+  const groupId = membership?.groupId;
 
-  if (!userId) throw new Error("Unauthorized");
+  if (!userId || !groupId) throw new Error("Unauthorized");
 
   const operations = [];
 

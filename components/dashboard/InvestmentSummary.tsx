@@ -5,9 +5,9 @@ import { generatInformations } from "@/utils/constant";
 import { TransactionType } from "@prisma/client";
 import { TrendingUp, Target, Calendar, ShieldCheck } from "lucide-react";
 
-export async function InvestmentSummary() {
-  const session = await authGuard();
-  const userId = session.user.id;
+export async function InvestmentSummary({ groupId }: { groupId: string }) {
+  const { user } = await authGuard(groupId);
+  const userId = user.id;
 
   const nextReview = addYearMonthDay({ month: 1 });
 

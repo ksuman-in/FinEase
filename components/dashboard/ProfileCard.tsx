@@ -1,18 +1,28 @@
-import { User as Users } from "@/lib/auth-types";
 import { Mail, Phone, Shield, Calendar, Fingerprint, User } from "lucide-react";
 interface MemberCardProps {
-  user: Users;
+  user: {
+    name: string;
+    email: string;
+    phoneNumber: string | null;
+    createdAt: Date;
+    id: string;
+  };
+  membership: { role: string } | null;
 }
-export default function ProfileCard({ user }: MemberCardProps) {
+export default function ProfileCard({ user, membership }: MemberCardProps) {
   const infoItems = [
     { label: "Full Name", value: user.name, icon: User },
     { label: "Email Address", value: user.email, icon: Mail },
     {
       label: "Phone Number",
-      value: user.phoneNumber || "Not provided",
+      value: user.phoneNumber || "No contact linked",
       icon: Phone,
     },
-    { label: "Account Role", value: user.role?.toUpperCase(), icon: Shield },
+    {
+      label: "Account Role",
+      value: membership?.role?.toUpperCase(),
+      icon: Shield,
+    },
     {
       label: "Member Since",
       value: new Date(user.createdAt).toLocaleDateString(),

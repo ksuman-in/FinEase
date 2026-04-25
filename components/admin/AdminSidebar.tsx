@@ -1,4 +1,5 @@
 "use client";
+import { logoutAction } from "@/lib/actions/auth";
 import {
   LayoutDashboard,
   Users,
@@ -20,9 +21,12 @@ const menuItems = [
 export default function AdminSidebar() {
   const pathname = usePathname();
 
+  const handleLogout = async () => {
+    await logoutAction();
+  };
+
   return (
     <nav className="hidden lg:flex w-72 h-[calc(100vh-2rem)] m-4 bg-white border border-slate-100 rounded-[2.5rem] p-8 flex-col shadow-2xl sticky top-4">
-      {/* Logo Area */}
       <div className="mb-12 px-2">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-slate-900 rounded-2xl flex items-center justify-center text-white font-black shadow-lg">
@@ -39,7 +43,6 @@ export default function AdminSidebar() {
         </div>
       </div>
 
-      {/* Links */}
       <div className="flex-1 space-y-2">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
@@ -74,7 +77,10 @@ export default function AdminSidebar() {
           Member Dashboard
         </Link>
 
-        <button className="w-full flex items-center gap-4 p-4 rounded-2xl text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 transition-all">
+        <button
+          className="w-full flex items-center gap-4 p-4 rounded-2xl text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 transition-all"
+          onClick={handleLogout}
+        >
           <LogOut size={18} />
           Terminate Session
         </button>
