@@ -2,6 +2,7 @@
 
 import { VaultLogoIcon } from "@/components/ui/logo-icon";
 import { logoutAction } from "@/lib/actions/auth";
+import { UserRole } from "@prisma/client";
 import { motion } from "framer-motion";
 import {
   ShieldAlert,
@@ -25,8 +26,7 @@ export default function PendingPage({ user }: PendingPageProps) {
     await logoutAction();
   };
 
-  // Logic to determine what "Benefits" to show while they wait
-  const isInvestor = user.role === "MEMBER";
+  const isInvestor = user.role === UserRole.MEMBER;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">

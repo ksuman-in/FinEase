@@ -48,7 +48,7 @@ export default function InviteMemberCard({
   }, [groupId, setValue]);
 
   const onSubmit = async (values: InviteFormValues) => {
-    setIsSuccess(true);
+    setIsSuccess(false);
     try {
       const result = await inviteMemberAction(
         values.email,
@@ -57,10 +57,9 @@ export default function InviteMemberCard({
       );
       setGeneratedLink(result.inviteLink);
       reset({ selectedGroupId: values.selectedGroupId });
+      setIsSuccess(true);
     } catch (err) {
       alert("Something went wrong. Please try again.");
-    } finally {
-      setIsSuccess(false);
     }
   };
 
@@ -93,11 +92,15 @@ export default function InviteMemberCard({
               <option value="" disabled>
                 Select a Group
               </option>
-              {availableGroups.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.name}
-                </option>
-              ))}
+              {availableGroups.length === 0 && groupId ? (
+                <option value={groupId}>Current Group</option>
+              ) : (
+                availableGroups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))
+              )}
             </select>
             <LayoutGrid
               className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"

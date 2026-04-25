@@ -33,7 +33,6 @@ export default async function getTotalInHand(groupId?: string) {
   const contributions = Number(totalContribution._sum.amount ?? 0);
   const interests = Number(totalInterest._sum.amount ?? 0);
   const disbursed = Number(totalDisbursed._sum.amount ?? 0);
-  console.log({ contributions }, { interests });
   // In Hand = (Money In) - (Money Out)
   return contributions + interests - disbursed;
 }

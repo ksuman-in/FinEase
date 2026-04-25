@@ -121,13 +121,6 @@ export const authGuard = cache(
       if (!membership && !user.isSuperAdmin) {
         redirect("/dashboard");
       }
-
-      if (!membership && user.isSuperAdmin) {
-        membership = {
-          groupId: groupId,
-          role: "OWNER",
-        };
-      }
     } else {
       membership = await prisma.membership.findFirst({
         where: { userId: user.id },

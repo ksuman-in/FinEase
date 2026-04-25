@@ -7,7 +7,8 @@ export async function proxy(request: NextRequest) {
     request.cookies.get("__Secure-better-auth.session_token")?.value;
 
   const pathname = request.nextUrl.pathname;
-  const isProtectedRoute = pathname.startsWith("/dashboard");
+  const isProtectedRoute =
+    pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
 
   if (isProtectedRoute && !token) {
     return NextResponse.redirect(new URL("/login", request.url));

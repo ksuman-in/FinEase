@@ -8,7 +8,9 @@ import { prisma } from "../db";
  * @param groupId - The ID of the group context from the URL.
  */
 export default async function activeLoan(groupId?: string) {
-  const { user } = await authGuard(groupId);
+  const { user, membership } = await authGuard(groupId);
+  const scopedGroupId = groupId ?? membership?.groupId;
+  if (!scopedGroupId) return null;
   const userId = user.id;
   const userWithLoanStatus = await prisma.user.findUnique({
     where: { id: userId },
@@ -16,7 +18,7 @@ export default async function activeLoan(groupId?: string) {
       loans: {
         where: {
           status: LoanStatus.ACTIVE,
-          groupId: groupId,
+          groupId: scopedGroupId,
         },
         take: 1,
         select: {

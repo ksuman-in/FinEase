@@ -12,11 +12,16 @@ export async function inviteMemberAction(
 ) {
   if (!groupId) throw new Error("Unauthorized");
 
+  const EXPIRES_IN_DAYS = 7;
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + EXPIRES_IN_DAYS);
+
   const allowedUser = await prisma.allowedUser.create({
     data: {
       email: email.toLowerCase(),
       phoneNumber: phone,
       groupId: groupId,
+      expiresAt,
     },
   });
 

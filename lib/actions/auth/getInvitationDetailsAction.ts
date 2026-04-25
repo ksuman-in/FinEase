@@ -13,11 +13,22 @@ export async function getInvitationDetailsAction(token: string) {
         email: true,
         phoneNumber: true,
         groupId: true,
+        expiresAt: true,
       },
     });
 
     if (!allowed) {
-      return { error: "This invitation link is invalid or has expired." };
+      return {
+        error: "This invitation link has already been used or never existed.",
+      };
+    }
+
+    const isExpired = new Date() > new Date(allowed.expiresAt);
+
+    if (isExpired) {
+      return {
+        error: "This invitation link has expired. Please request a new one.",
+      };
     }
 
     return {

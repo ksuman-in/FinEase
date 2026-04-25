@@ -221,6 +221,7 @@ model AllowedUser {
   group       Group    @relation(fields: [groupId], references: [id])
   token       String   @unique @default(uuid())
   createdAt   DateTime @default(now())
+  expiresAt   DateTime
 
   @@index([email, phoneNumber]) // Speeds up lookup during registration
 }

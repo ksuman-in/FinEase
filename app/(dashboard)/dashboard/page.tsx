@@ -11,14 +11,12 @@ export default async function DashboardRedirectPage({
   const { groupId } = await params;
   const { user } = await authGuard(groupId);
 
-  if (!user.id) redirect("/login");
-
   if (user?.role === UserRole.BORROWER) {
     redirect("/borrower/dashboard");
   }
 
   const membership = await prisma.membership.findFirst({
-    where: { userId: user.id },
+    where: { userId: user.id, groupId },
     orderBy: { createdAt: "asc" },
     select: { groupId: true },
   });

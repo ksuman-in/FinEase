@@ -25,7 +25,7 @@ export default async function DashboardPage({ params }: PageProps) {
   const activeLoanDetails = await activeLoan(groupId);
   const isActiveLoan = !!activeLoanDetails?.id;
 
-  const pendingOrCancelled = !isActiveLoan
+  const pendingLoan = !isActiveLoan
     ? await prisma.memberLoan.findFirst({
         where: {
           userId: session.user.id,
@@ -49,7 +49,7 @@ export default async function DashboardPage({ params }: PageProps) {
           id="status-alerts"
           className="animate-in slide-in-from-top-4 duration-500"
         >
-          <LoanStatusBanner loan={pendingOrCancelled} />
+          <LoanStatusBanner loan={pendingLoan} />
         </section>
       )}
 
@@ -76,7 +76,7 @@ export default async function DashboardPage({ params }: PageProps) {
             </div>
           ) : (
             <EmptyLoanState
-              loan={pendingOrCancelled}
+              loan={pendingLoan}
               user={{ ...user, groupId: groupId }}
             />
           )}

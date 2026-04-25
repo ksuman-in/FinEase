@@ -20,6 +20,12 @@ export async function signUpMemberAction({
     return { error: "Invalid or expired invitation link." };
   }
 
+  if (allowed.expiresAt && new Date() > new Date(allowed.expiresAt)) {
+    return {
+      error: "This invitation link has expired. Please contact your admin.",
+    };
+  }
+
   try {
     const res = await auth.api.signUpEmail({
       headers: await headers(),
@@ -35,24 +41,27 @@ export async function signUpMemberAction({
       return { error: "Failed to create account profile." };
     }
 
-    await prisma.membership.create({
-      data: {
-        userId: res.user.id,
-        groupId: allowed.groupId,
-        role: GroupRole.MEMBER,
-      },
-    });
+    await prisma.$transaction(async (tx) => {
+      await tx.membership.create({
+        data: {
+          userId: res.user.id,
+          groupId: allowed.groupId,
+          role: GroupRole.MEMBER,
+        },
+      });
 
-    await prisma.allowedUser.delete({
-      where: { token: token },
+      await tx.allowedUser.delete({
+        where: { token: token },
+      });
     });
 
     return { success: true };
   } catch (error) {
     return {
       error:
-        (error instanceof Error && error.message) ||
-        "An error occurred during registration",
+        error instanceof Error
+          ? error.message
+          : "An error occurred during registration",
     };
   }
 }

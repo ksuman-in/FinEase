@@ -20,13 +20,6 @@ export default async function AdminPage() {
 
   const allGroups = user.isSuperAdmin
     ? await prisma.group.findMany({
-        where: {
-          AND: [
-            {
-              memberships: {},
-            },
-          ],
-        },
         select: {
           id: true,
           name: true,
