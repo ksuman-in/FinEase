@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { Resend } from "resend";
+import { requireGroupOwner } from "../auth-utils";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -11,6 +12,8 @@ export async function inviteMemberAction(
   groupId: string | undefined,
 ) {
   if (!groupId) throw new Error("Unauthorized");
+
+  await requireGroupOwner(groupId);
 
   const EXPIRES_IN_DAYS = 7;
   const expiresAt = new Date();
