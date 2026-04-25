@@ -38,7 +38,7 @@ export const requireVerifiedAuth = async () => {
   });
 
   if (!user?.isVerified && !user?.isSuperAdmin) {
-    redirect("/verification-pending");
+    redirect("/onboarding");
   }
 
   return { session, user };
@@ -80,46 +80,59 @@ export const requireGroupOwner = async (groupId: string) => {
   return { session, membership };
 };
 
-/**
- * REFINED AUTH GUARD:
- * Main utility for layouts and pages.
- */
 export const authGuard = cache(
-  async (options?: { superAdminOnly?: boolean; verifiedOnly?: boolean }) => {
+  async (
+    groupId?: string,
+    options?: { superAdminOnly?: boolean; verifiedOnly?: boolean },
+  ) => {
     const session = await getSession();
-
-    if (!session) {
-      redirect("/login");
-    }
+    if (!session?.user) redirect("/login");
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
     });
 
-    const membership = await prisma.membership.findFirst({
-      where: {
-        userId: session.user.id,
-      },
-      select: {
-        groupId: true,
-        role: true,
-      },
-    });
-
     if (!user) redirect("/login");
 
-    if (
-      options?.verifiedOnly !== false &&
-      !user.isVerified &&
-      !user.isSuperAdmin
-    ) {
-      redirect("/verification-pending");
+    if (user.isSuperAdmin) {
+      return {
+        session,
+        user,
+        membership: { role: "OWNER", groupId: groupId || "admin" },
+      };
     }
 
-    if (options?.superAdminOnly && !user.isSuperAdmin) {
-      redirect("/dashboard");
+    if (options?.verifiedOnly === true && !user.isVerified) {
+      redirect("/onboarding");
     }
 
+    let membership = null;
+
+    if (groupId) {
+      membership = await prisma.membership.findUnique({
+        where: {
+          userId_groupId: {
+            userId: user.id,
+            groupId: groupId,
+          },
+        },
+      });
+
+      if (!membership && !user.isSuperAdmin) {
+        redirect("/dashboard");
+      }
+
+      if (!membership && user.isSuperAdmin) {
+        membership = {
+          groupId: groupId,
+          role: "OWNER",
+        };
+      }
+    } else {
+      membership = await prisma.membership.findFirst({
+        where: { userId: user.id },
+      });
+    }
     return { session, user, membership };
   },
 );

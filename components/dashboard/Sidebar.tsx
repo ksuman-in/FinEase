@@ -14,25 +14,35 @@ import {
 import { logoutAction } from "@/lib/actions/auth";
 import { GroupRole } from "@prisma/client";
 
-const menuItems = [
-  { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Approvals", href: "/dashboard/requests", icon: ShieldCheck },
-  { name: "Ledger", href: "/dashboard/transactions", icon: ReceiptIndianRupee },
-  { name: "Members", href: "/dashboard/members", icon: Users },
-  { name: "Reports", href: "/dashboard/reports", icon: PieChart },
-];
-
 interface SidebarProps {
   closeSidebar?: () => void;
-  membership?: { role: string } | null;
+  membership?: { role: string; groupId: string } | null;
   pendingCount?: number;
+  isSuperAdmin: boolean;
 }
 
 export default function Sidebar({
   closeSidebar,
   membership,
   pendingCount,
+  isSuperAdmin,
 }: SidebarProps) {
+  const dashboardUrl = `/dashboard/${membership?.groupId}`;
+  const menuItems = [
+    { name: "Overview", href: `${dashboardUrl}`, icon: LayoutDashboard },
+    {
+      name: "Approvals",
+      href: `${dashboardUrl}/approvals`,
+      icon: ShieldCheck,
+    },
+    {
+      name: "Ledger",
+      href: `${dashboardUrl}/transactions`,
+      icon: ReceiptIndianRupee,
+    },
+    { name: "Members", href: `${dashboardUrl}/members`, icon: Users },
+    { name: "Reports", href: `${dashboardUrl}/reports`, icon: PieChart },
+  ];
   const pathname = usePathname();
   const isOwner = membership?.role === GroupRole.OWNER;
 
@@ -46,7 +56,8 @@ export default function Sidebar({
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
-          const isOwnerLink = item.href === "/dashboard/requests";
+          const isOwnerLink =
+            item.href === `/dashboard/${membership?.groupId}/approvals`;
 
           if (isOwnerLink && !isOwner) {
             return null;
@@ -89,15 +100,18 @@ export default function Sidebar({
               )}
 
               {isOwnerLink && isOwner && pendingCount && pendingCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-lg shadow-lg border border-white">
-                  {pendingCount}
+                <span className="absolute -top-1 -right-1 flex h-5 w-5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-lg bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex items-center justify-center rounded-lg h-5 w-5 bg-rose-500 text-white text-[10px] font-black shadow-lg border border-white">
+                    {pendingCount}
+                  </span>
                 </span>
               )}
             </Link>
           );
         })}
 
-        {isOwner && (
+        {isSuperAdmin && (
           <div className="pt-4 mt-4 border-t border-white/40">
             <Link
               href="/admin"

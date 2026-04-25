@@ -46,6 +46,18 @@ export const auth = betterAuth({
         type: "string",
         required: true,
       },
+      isSuperAdmin: {
+        type: "boolean",
+        defaultValue: false,
+      },
+      isVerified: {
+        type: "boolean",
+        defaultValue: false,
+      },
+      role: {
+        type: "string",
+        defaultValue: "MEMBER",
+      },
     },
   },
 });

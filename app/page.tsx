@@ -5,18 +5,20 @@ import { redirect } from "next/navigation";
 
 export default async function HomePage() {
   const session = await getSession();
-  if (!session) {
-    return <DisclaimerLanding />;
-  }
+  if (!session) return <DisclaimerLanding />;
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { isVerified: true, isSuperAdmin: true },
+    select: { isVerified: true, isSuperAdmin: true, role: true },
   });
 
-  if (user?.isVerified || user?.isSuperAdmin) {
+  if (!user) redirect("/login");
+
+  // If already verified, send to the logic-heavy dashboard redirector
+  if (user.isVerified || user.isSuperAdmin) {
     redirect("/dashboard");
-  } else {
-    redirect("/verification-pending");
   }
+
+  // Otherwise, stay in the onboarding flow
+  redirect("/onboarding");
 }

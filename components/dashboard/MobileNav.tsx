@@ -6,13 +6,15 @@ import { Menu, X } from "lucide-react";
 import Sidebar from "./Sidebar";
 
 interface MobileNavProps {
-  membership?: { role: string } | null;
+  membership?: { role: string; groupId: string } | null;
   pendingCount?: number;
+  isSuperAdmin: boolean;
 }
 
 export default function MobileNav({
   membership,
   pendingCount,
+  isSuperAdmin,
 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
@@ -48,7 +50,7 @@ export default function MobileNav({
             <Sidebar
               pendingCount={pendingCount}
               membership={membership}
-              closeSidebar={() => setOpen(false)}
+              isSuperAdmin={isSuperAdmin}
             />
           </div>
 

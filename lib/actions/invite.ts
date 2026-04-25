@@ -12,7 +12,7 @@ export async function inviteMemberAction(
 ) {
   if (!groupId) throw new Error("Unauthorized");
 
-  await prisma.allowedUser.create({
+  const allowedUser = await prisma.allowedUser.create({
     data: {
       email: email.toLowerCase(),
       phoneNumber: phone,
@@ -21,7 +21,7 @@ export async function inviteMemberAction(
   });
 
   const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
-  const inviteLink = `${baseUrl}/register?email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`;
+  const inviteLink = `${baseUrl}/register?token=${encodeURIComponent(allowedUser.token)}`;
 
   // try {
   //   await resend.emails.send({

@@ -11,6 +11,12 @@ enum GroupRole {
   MEMBER
 }
 
+enum UserRole {
+  MEMBER
+  BORROWER
+  ADMIN
+}
+
 enum LoanStatus {
   ACTIVE
   PAID
@@ -37,13 +43,16 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  // --- THE GATEKEEPER FIELDS ---
-  // Only Super Admin can toggle these. 
-  // If isVerified is false, user sees "Pending" screen.
   isVerified   Boolean @default(false)
   isSuperAdmin Boolean @default(false)
 
   phoneNumber String? @unique
+
+  role UserRole @default(MEMBER)
+
+  address          String?
+  idNumber         String? @unique // e.g., Aadhar, PAN, or DL
+  emergencyContact String?
 
   // Relations
   memberships  Membership[]
@@ -78,8 +87,11 @@ model Membership {
   role    GroupRole @default(MEMBER)
   userId  String
   groupId String
-  user    User      @relation(fields: [userId], references: [id])
-  group   Group     @relation(fields: [groupId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
 
   @@unique([userId, groupId])
 }
@@ -119,12 +131,6 @@ model MemberTransaction {
 
   @@index([userId, date])
   @@index([type])
-}
-
-enum UserType {
-  ADMIN
-  MEMBER
-  BORROWER
 }
 
 model GlobalSettings {
@@ -213,6 +219,7 @@ model AllowedUser {
   phoneNumber String   @unique // Added unique phone number
   groupId     String
   group       Group    @relation(fields: [groupId], references: [id])
+  token       String   @unique @default(uuid())
   createdAt   DateTime @default(now())
 
   @@index([email, phoneNumber]) // Speeds up lookup during registration

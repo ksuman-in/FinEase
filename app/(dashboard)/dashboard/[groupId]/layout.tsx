@@ -6,13 +6,33 @@ import { prisma } from "@/lib/db";
 
 export default async function DashboardLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ groupId: string }>;
 }) {
-  const { user, membership } = await authGuard();
-  const pendingCount = await prisma.memberLoan.count({
-    where: { status: "REQUEST" },
-  });
+  const { groupId } = await params;
+  const { membership, user } = await authGuard(groupId);
+  const isSuperAdmin = !!user.isSuperAdmin;
+  let totalPending = 0;
+
+  if (membership?.role === "OWNER") {
+    const pendingMembers = await prisma.membership.count({
+      where: {
+        groupId: groupId,
+        user: { isVerified: false },
+      },
+    });
+
+    const pendingLoans = await prisma.memberLoan.count({
+      where: {
+        groupId: groupId,
+        status: "REQUEST",
+      },
+    });
+
+    totalPending = pendingMembers + pendingLoans;
+  }
 
   return (
     <div className="flex min-h-screen dashboard-bg text-slate-900 font-sans relative">
@@ -27,7 +47,11 @@ export default async function DashboardLayout({
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar px-4">
-          <Sidebar pendingCount={pendingCount} membership={membership} />
+          <Sidebar
+            pendingCount={totalPending}
+            membership={membership}
+            isSuperAdmin={isSuperAdmin}
+          />
         </div>
 
         <div className="p-6 border-t border-white/40">
@@ -48,7 +72,7 @@ export default async function DashboardLayout({
       </aside>
 
       <main className="flex-1 flex flex-col min-w-0 relative z-40">
-        <TopNav />
+        <TopNav groupId={groupId} />
         <div className="flex-1 p-4 md:p-8 relative z-10">{children}</div>
       </main>
     </div>

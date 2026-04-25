@@ -6,32 +6,34 @@ import { headers } from "next/headers";
 import { GroupRole } from "@prisma/client";
 
 export async function signUpMemberAction({
-  email,
+  token,
   password,
-  phone,
 }: {
-  email: string;
+  token: string;
   password: string;
-  phone: string;
 }) {
   const allowed = await prisma.allowedUser.findUnique({
-    where: { email: email.toLowerCase() },
+    where: { token: token },
   });
 
   if (!allowed) {
-    throw new Error("You must be invited by an agent to register.");
+    return { error: "Invalid or expired invitation link." };
   }
 
   try {
     const res = await auth.api.signUpEmail({
       headers: await headers(),
       body: {
-        email: email.toLowerCase(),
-        phoneNumber: allowed.phoneNumber || phone,
-        name: email.split("@")[0],
+        email: allowed.email.toLowerCase(),
+        phoneNumber: allowed.phoneNumber,
+        name: allowed.email.split("@")[0],
         password: password,
       },
     });
+
+    if (!res?.user) {
+      return { error: "Failed to create account profile." };
+    }
 
     await prisma.membership.create({
       data: {
@@ -41,10 +43,16 @@ export async function signUpMemberAction({
       },
     });
 
+    await prisma.allowedUser.delete({
+      where: { token: token },
+    });
+
     return { success: true };
   } catch (error) {
     return {
-      error: (error instanceof Error && error.message) || "Login failed",
+      error:
+        (error instanceof Error && error.message) ||
+        "An error occurred during registration",
     };
   }
 }

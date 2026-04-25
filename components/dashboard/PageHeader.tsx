@@ -2,8 +2,8 @@ import { authGuard } from "@/lib/auth-utils";
 import MobileNav from "./MobileNav";
 import { prisma } from "@/lib/db";
 
-export default async function PageHeader({ action = "" }: { action?: string }) {
-  const { membership, user } = await authGuard();
+export default async function PageHeader({ groupId }: { groupId: string }) {
+  const { membership, user } = await authGuard(groupId);
 
   const pendingCount = await prisma.memberLoan.count({
     where: {
@@ -19,7 +19,11 @@ export default async function PageHeader({ action = "" }: { action?: string }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="lg:hidden">
-            <MobileNav membership={membership} pendingCount={pendingCount} />
+            <MobileNav
+              membership={membership}
+              isSuperAdmin={user.isSuperAdmin}
+              pendingCount={pendingCount}
+            />
           </div>
           <div className="hidden md:block lg:hidden">
             <h1 className="text-xl font-black tracking-tighter text-slate-900">
@@ -29,7 +33,7 @@ export default async function PageHeader({ action = "" }: { action?: string }) {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">{action}</div>
+          <div className="flex items-center gap-3">{""}</div>
           <div className="flex items-center gap-3 pl-4 border-l border-white/40">
             <div className="hidden md:flex flex-col items-end text-right">
               <span className="text-xs font-black text-slate-900 leading-none">

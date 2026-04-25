@@ -27,7 +27,6 @@ export function EmptyLoanState({
     () => day >= interestStart && day <= interestEnd,
     [day, interestStart, interestEnd],
   );
-  console.log({ user });
 
   const handleRequestNewLoan = async (values: {
     amount: number;
