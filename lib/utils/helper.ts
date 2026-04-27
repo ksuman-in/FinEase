@@ -1,5 +1,3 @@
-import { configTimeline } from "@/utils/constant";
-
 const pr = new Intl.PluralRules("en-US", { type: "ordinal" });
 
 const suffixes: Record<Intl.LDMLPluralRule, string> = {
@@ -17,21 +15,54 @@ export function getOrdinal(n: number) {
   return `${n}${suffix}`;
 }
 
-export const getPaymentWindowStatus = (now = new Date()) => {
+interface PaymentWindowParams {
+  now?: Date;
+  groupConfig: {
+    interestStartDay: number;
+    interestEndDay: number;
+    principalStartDay: number;
+    principalEndDay: number;
+  };
+}
+
+export const getPaymentWindowStatus = (params: PaymentWindowParams) => {
+  if (!params?.groupConfig) {
+    return {
+      isInterestWindow: false,
+      isPrincipalWindow: false,
+      currentDay: 0,
+    };
+  }
+  const { now, groupConfig } = params;
+
   const day = Number(
     new Intl.DateTimeFormat("en-US", {
       day: "numeric",
       timeZone: "Asia/Kolkata",
-    }).format(now),
+    }).format(now || new Date()),
   );
-  // const day = new Date().getDate();
+  const {
+    interestStartDay,
+    interestEndDay,
+    principalStartDay,
+    principalEndDay,
+  } = groupConfig;
   return {
-    isInterestWindow:
-      day >= configTimeline.INTEREST.start &&
-      day <= configTimeline.INTEREST.end,
-    isPrincipalWindow:
-      day >= configTimeline.PRINCIPAL.start &&
-      day <= configTimeline.PRINCIPAL.end,
+    isInterestWindow: day >= interestStartDay && day <= interestEndDay,
+    isPrincipalWindow: day >= principalStartDay && day <= principalEndDay,
     currentDay: day,
+  };
+};
+
+export const calculatePrincipalSavings = (
+  rate: number,
+  amount: number = 10000,
+) => {
+  const monthlySaving = (amount * (rate / 100)) / 12;
+
+  return {
+    amount: amount,
+    monthlySaving: Math.round(monthlySaving),
+    rate: rate,
   };
 };

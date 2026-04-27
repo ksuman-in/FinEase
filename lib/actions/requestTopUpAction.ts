@@ -10,12 +10,14 @@ import { formatCurrency } from "../utils/date-logic";
 export async function requestTopUpAction({
   amount,
   description,
+  groupId,
 }: {
   amount: number;
   description: string;
+  groupId: string;
 }) {
-  const session = await authGuard();
-  if (!session?.user) throw new Error("Unauthorized");
+  const { user } = await authGuard(groupId);
+  if (!user.id) throw new Error("Unauthorized");
 
   if (!Number.isFinite(amount) || amount <= 0) {
     return {
@@ -24,12 +26,13 @@ export async function requestTopUpAction({
     };
   }
 
-  const availableCash = await getTotalInHand();
+  const availableCash = await getTotalInHand(groupId);
 
   const activeLoan = await prisma.memberLoan.findFirst({
     where: {
-      userId: session.user.id,
+      userId: user.id,
       status: LoanStatus.ACTIVE,
+      groupId,
     },
   });
 
@@ -39,8 +42,9 @@ export async function requestTopUpAction({
 
   const existingPendingRequest = await prisma.memberLoan.findFirst({
     where: {
-      userId: session.user.id,
+      userId: user.id,
       status: LoanStatus.REQUEST,
+      groupId,
     },
     select: { id: true },
   });
@@ -62,12 +66,12 @@ export async function requestTopUpAction({
 
   await prisma.memberLoan.create({
     data: {
-      userId: session.user.id,
+      userId: user.id,
       groupId: activeLoan?.groupId,
       amount: amount,
       description: `TOP-UP: ${description}`,
       status: LoanStatus.REQUEST,
-      interestRate: activeLoan.interestRate, // Keep original rate
+      interestRate: activeLoan.interestRate,
     },
   });
 

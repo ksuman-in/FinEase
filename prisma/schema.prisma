@@ -78,6 +78,8 @@ model Group {
   transactions   MemberTransaction[]
   monthlyReports MonthlyReport[]
 
+  config GroupConfig?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -131,6 +133,25 @@ model MemberTransaction {
 
   @@index([userId, date])
   @@index([type])
+}
+
+model GroupConfig {
+  id      String @id @default(cuid())
+  groupId String @unique
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  monthlyContribution  Float @default(1000)
+  minPrincipalPayment  Float @default(10000)
+  // Interest Rate Settings
+  memberInterestRate   Float @default(12)
+  borrowerInterestRate Float @default(18)
+
+  interestStartDay  Int @default(1)
+  interestEndDay    Int @default(5)
+  principalStartDay Int @default(1)
+  principalEndDay   Int @default(10)
+
+  updatedAt DateTime @updatedAt
 }
 
 model GlobalSettings {

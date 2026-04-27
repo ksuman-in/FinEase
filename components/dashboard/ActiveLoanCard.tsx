@@ -1,4 +1,7 @@
-import { getPaymentWindowStatus } from "@/lib/utils/helper";
+import {
+  calculatePrincipalSavings,
+  getPaymentWindowStatus,
+} from "@/lib/utils/helper";
 import { ArrowUpRight, Calendar, Info, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils/date-logic";
 import LoanButton from "./LoanButton";
@@ -13,19 +16,38 @@ interface LoanProps {
 
 export default function ActiveLoanCard({
   activeLoanDetails,
+  groupId,
+  groupConfig,
 }: {
   activeLoanDetails: LoanProps;
+  groupId: string;
+  groupConfig: {
+    memberInterestRate: number;
+    interestStartDay: number;
+    interestEndDay: number;
+    principalStartDay: number;
+    principalEndDay: number;
+  };
 }) {
-  const { isPrincipalWindow } = getPaymentWindowStatus();
-  const { amount, interestRate, issuedAt, transactions } = activeLoanDetails;
+  const { memberInterestRate } = groupConfig;
+  const { isPrincipalWindow } = getPaymentWindowStatus({
+    groupConfig,
+  });
+  const { amount, issuedAt, transactions } = activeLoanDetails;
   const totalPrincipalPaid = transactions.reduce(
     (acc, tx) => acc + tx.amount,
     0,
   );
 
+  const interestRate = parseFloat(
+    String(memberInterestRate ? memberInterestRate / 12 : 1),
+  );
+
   const remainingPrincipal = amount - totalPrincipalPaid;
   const nextInterest = (remainingPrincipal * (interestRate / 100)).toFixed(0);
   const paidPercentage = ((amount - remainingPrincipal) / amount) * 100;
+
+  const principalSaving = calculatePrincipalSavings(memberInterestRate);
 
   return (
     <div className="glass-morphism rounded-[3rem] p-10 relative group border border-white shadow-2xl overflow-hidden transition-all duration-500">
@@ -117,6 +139,8 @@ export default function ActiveLoanCard({
         <LoanButton
           loanId={activeLoanDetails.id}
           activeLoanDetails={activeLoanDetails}
+          groupId={groupId}
+          groupConfig={groupConfig}
         />
       </div>
 
@@ -130,9 +154,15 @@ export default function ActiveLoanCard({
             Smart Savings Tip
           </p>
           <p className="text-[13px] text-slate-600 leading-relaxed font-medium">
-            Every <span className="font-bold text-blue-600">₹10,000</span> paid
-            toward principal now reduces your lifetime interest by{" "}
-            <span className="font-bold text-blue-600">₹100</span> monthly.
+            Every{" "}
+            <span className="font-bold text-blue-600">
+              {formatCurrency(principalSaving.amount)}
+            </span>{" "}
+            paid toward principal now reduces your lifetime interest by{" "}
+            <span className="font-bold text-blue-600">
+              {formatCurrency(principalSaving.monthlySaving)}
+            </span>{" "}
+            monthly.
           </p>
         </div>
       </div>
@@ -150,7 +180,9 @@ export default function ActiveLoanCard({
           </div>
           <p className="text-[11px] leading-snug font-medium">
             Reducing balance active. Pay principal to lower your next{" "}
-            <span className="text-slate-900 font-bold">₹{nextInterest}</span>{" "}
+            <span className="text-slate-900 font-bold">
+              {formatCurrency(+nextInterest)}
+            </span>
             interest.
           </p>
         </div>

@@ -27,11 +27,11 @@ export const MONTHS = [
 
 export const configTimeline = {
   INTEREST: {
-    start: 20,
-    end: 25,
+    start: 25,
+    end: 30,
   },
   PRINCIPAL: {
-    start: 20,
-    end: 25,
+    start: 25,
+    end: 30,
   },
 };

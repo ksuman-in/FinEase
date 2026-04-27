@@ -1,17 +1,29 @@
 import { getOrdinal } from "@/lib/utils/helper";
-import { configTimeline } from "@/utils/constant";
 import { Lock, Unlock, Zap, ShieldCheck } from "lucide-react";
 
 export function PaymentStatusTimeline({
   isActiveLoan,
+  groupConfig,
 }: {
   isActiveLoan: boolean;
+  groupConfig: {
+    interestStartDay: number;
+    interestEndDay: number;
+    principalStartDay: number;
+    principalEndDay: number;
+  };
 }) {
   const day = new Date().getDate();
-  const interestStart = configTimeline.INTEREST.start;
-  const interestEnd = configTimeline.INTEREST.end;
-  const principalStart = configTimeline.PRINCIPAL.start;
-  const principalEnd = configTimeline.PRINCIPAL.end;
+  const {
+    interestStartDay,
+    interestEndDay,
+    principalStartDay,
+    principalEndDay,
+  } = groupConfig;
+  const interestStart = interestStartDay;
+  const interestEnd = interestEndDay;
+  const principalStart = principalStartDay;
+  const principalEnd = principalEndDay;
 
   const windows = [
     {

@@ -23,18 +23,29 @@ type TransactionMode = "TOP_UP" | "CONTRIB" | "PRIN_REPAY";
 export default function LoanButton({
   loanId,
   activeLoanDetails,
+  groupId,
+  groupConfig,
 }: {
   loanId: string;
   activeLoanDetails: LoanProps;
+  groupId: string;
+  groupConfig: {
+    memberInterestRate: number;
+    interestStartDay: number;
+    interestEndDay: number;
+    principalStartDay: number;
+    principalEndDay: number;
+  };
 }) {
-  const { isInterestWindow, isPrincipalWindow } = getPaymentWindowStatus();
+  const { isInterestWindow, isPrincipalWindow } = getPaymentWindowStatus({
+    groupConfig,
+  });
   const { amount, interestRate, transactions } = activeLoanDetails;
   const { monthlyContribution } = generatInformations;
   const totalPrincipalPaid = transactions.reduce(
     (acc, tx) => acc + tx.amount,
     0,
   );
-
   const remainingPrincipal = amount - totalPrincipalPaid;
 
   const [isOpenModal, openLoanModal] = useState(false);
@@ -64,6 +75,7 @@ export default function LoanButton({
         interestAmount,
         contributionAmount,
         description,
+        groupId,
       });
       return response as { success?: boolean; error?: string };
     }
@@ -72,6 +84,7 @@ export default function LoanButton({
         loanId,
         amount,
         description,
+        groupId,
       });
       return response as { success?: boolean; error?: string };
     }
@@ -79,6 +92,7 @@ export default function LoanButton({
       const response = await requestTopUpAction({
         amount,
         description,
+        groupId,
       });
       return response as { success?: boolean; error?: string };
     }
@@ -87,9 +101,9 @@ export default function LoanButton({
   return (
     <div className="flex flex-col gap-5 mt-8 relative z-20">
       <div className="flex gap-4">
-        {/* INTEREST BUTTON: Refined Milk Glass Style */}
         <button
           disabled={!isInterestWindow}
+          suppressHydrationWarning={true}
           onClick={() => openContributionModal(TransactionType.CONTRIB)}
           className={`flex-1 h-16 rounded-[1.5rem] font-black transition-all text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 border-2 ${
             isInterestWindow
@@ -105,9 +119,9 @@ export default function LoanButton({
           {isInterestWindow ? "Pay Interest" : "Closed"}
         </button>
 
-        {/* PRINCIPAL BUTTON: Refined Milk Glass Style */}
         <button
           disabled={!isPrincipalWindow}
+          suppressHydrationWarning={true}
           onClick={() => openContributionModal(TransactionType.PRIN_REPAY)}
           className={`flex-1 h-16 rounded-[1.5rem] font-black transition-all text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 border-2 ${
             isPrincipalWindow
@@ -120,10 +134,9 @@ export default function LoanButton({
         </button>
       </div>
 
-      {/* TOP-UP BUTTON: Dominant Dark Anchor Action */}
       <button
         onClick={() => openContributionModal(TransactionType.TOP_UP)}
-        className="w-full h-16 bg-slate-900 text-white font-black rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-blue-600 transition-all shadow-2xl shadow-slate-900/20 active:scale-[0.98] text-[10px] uppercase tracking-[0.2em] group"
+        className="w-full h-16 bg-slate-900 text-white font-black rounded-[1.5rem] flex items-center justify-center cursor-pointer gap-3 hover:bg-blue-600 transition-all shadow-2xl shadow-slate-900/20 active:scale-[0.98] text-[10px] uppercase tracking-[0.2em] group"
       >
         <div className="p-1.5 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
           <Plus className="w-4 h-4 text-white" strokeWidth={3} />
