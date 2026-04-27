@@ -18,6 +18,10 @@ export default function MobileNav({
 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
+  const closeSidebar = () => {
+    setOpen(false);
+  };
+
   return (
     <Drawer.Root direction="left" open={open} onOpenChange={setOpen}>
       <Drawer.Trigger asChild>
@@ -51,6 +55,7 @@ export default function MobileNav({
               pendingCount={pendingCount}
               membership={membership}
               isSuperAdmin={isSuperAdmin}
+              closeSidebar={closeSidebar}
             />
           </div>
 

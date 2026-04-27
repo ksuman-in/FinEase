@@ -56,9 +56,8 @@ export default async function requestLoanAction({
   const groupConfig = await getGroupConfig(groupId);
   const { memberInterestRate } = groupConfig as GroupConfig;
 
-  const interestRate = parseFloat(
-    String(memberInterestRate ? memberInterestRate / 12 : 1),
-  );
+  const annualRate = memberInterestRate ?? 12;
+  const interestRate = annualRate / 12;
 
   try {
     await prisma.memberLoan.create({

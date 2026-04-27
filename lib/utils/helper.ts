@@ -53,3 +53,16 @@ export const getPaymentWindowStatus = (params: PaymentWindowParams) => {
     currentDay: day,
   };
 };
+
+export const calculatePrincipalSavings = (
+  rate: number,
+  amount: number = 10000,
+) => {
+  const monthlySaving = (amount * (rate / 100)) / 12;
+
+  return {
+    amount: amount,
+    monthlySaving: Math.round(monthlySaving),
+    rate: rate,
+  };
+};

@@ -9,7 +9,17 @@ export async function verifyMemberAction(userId: string, groupId: string) {
     const { membership } = await authGuard(groupId);
 
     if (membership?.role !== "OWNER") {
-      throw new Error("Unauthorized: Only group owners can verify members.");
+      return {
+        success: false,
+        message: "Unauthorized: Only group owners can verify members.",
+      };
+    }
+
+    const target = await prisma.membership.findUnique({
+      where: { userId_groupId: { userId, groupId } },
+    });
+    if (!target) {
+      return { success: false, message: "User is not a member of this group." };
     }
 
     await prisma.user.update({
@@ -23,7 +33,9 @@ export async function verifyMemberAction(userId: string, groupId: string) {
     return { success: true };
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : "Failed to verify member",
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Failed to verify member",
     };
   }
 }

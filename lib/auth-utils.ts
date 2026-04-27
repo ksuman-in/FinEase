@@ -116,6 +116,10 @@ export const authGuard = cache(
             groupId: groupId,
           },
         },
+        select: {
+          role: true,
+          groupId: true,
+        },
       });
 
       if (!membership && !user.isSuperAdmin) {

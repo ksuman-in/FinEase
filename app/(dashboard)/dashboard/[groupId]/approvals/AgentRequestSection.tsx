@@ -16,8 +16,10 @@ type RequestType = {
 
 export default function AdminPendingRequests({
   requests,
+  memberInterestRate,
 }: {
   requests: RequestType[];
+  memberInterestRate: number;
 }) {
   const [processingState, setProcessingState] = useState<{
     id: string;
@@ -99,7 +101,7 @@ export default function AdminPendingRequests({
                     {formatCurrency(request.amount)}
                   </p>
                   <p className="text-[9px] md:text-[10px] font-bold text-emerald-600">
-                    1% Monthly Int.
+                    {(memberInterestRate / 12).toFixed(0)} Monthly Int.
                   </p>
                 </div>
                 <div className="md:hidden">

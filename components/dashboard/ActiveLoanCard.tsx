@@ -1,4 +1,7 @@
-import { getPaymentWindowStatus } from "@/lib/utils/helper";
+import {
+  calculatePrincipalSavings,
+  getPaymentWindowStatus,
+} from "@/lib/utils/helper";
 import { ArrowUpRight, Calendar, Info, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils/date-logic";
 import LoanButton from "./LoanButton";
@@ -43,6 +46,8 @@ export default function ActiveLoanCard({
   const remainingPrincipal = amount - totalPrincipalPaid;
   const nextInterest = (remainingPrincipal * (interestRate / 100)).toFixed(0);
   const paidPercentage = ((amount - remainingPrincipal) / amount) * 100;
+
+  const principalSaving = calculatePrincipalSavings(memberInterestRate);
 
   return (
     <div className="glass-morphism rounded-[3rem] p-10 relative group border border-white shadow-2xl overflow-hidden transition-all duration-500">
@@ -149,9 +154,15 @@ export default function ActiveLoanCard({
             Smart Savings Tip
           </p>
           <p className="text-[13px] text-slate-600 leading-relaxed font-medium">
-            Every <span className="font-bold text-blue-600">₹10,000</span> paid
-            toward principal now reduces your lifetime interest by{" "}
-            <span className="font-bold text-blue-600">₹100</span> monthly.
+            Every{" "}
+            <span className="font-bold text-blue-600">
+              {formatCurrency(principalSaving.amount)}
+            </span>{" "}
+            paid toward principal now reduces your lifetime interest by{" "}
+            <span className="font-bold text-blue-600">
+              {formatCurrency(principalSaving.monthlySaving)}
+            </span>{" "}
+            monthly.
           </p>
         </div>
       </div>
@@ -169,7 +180,9 @@ export default function ActiveLoanCard({
           </div>
           <p className="text-[11px] leading-snug font-medium">
             Reducing balance active. Pay principal to lower your next{" "}
-            <span className="text-slate-900 font-bold">₹{nextInterest}</span>{" "}
+            <span className="text-slate-900 font-bold">
+              {formatCurrency(+nextInterest)}
+            </span>
             interest.
           </p>
         </div>

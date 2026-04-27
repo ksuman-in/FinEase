@@ -6,6 +6,7 @@ import { GroupRole } from "@prisma/client";
 import { formatCurrency } from "@/lib/utils/date-logic";
 import getTotalInHand from "@/lib/actions/getTotalInHand";
 import MemberVerificationSection from "./MemberVerificationSection";
+import { getGroupConfig } from "@/lib/database/group-config";
 
 type ApprovalPageTypes = {
   params: Promise<{ groupId: string }>;
@@ -14,6 +15,8 @@ type ApprovalPageTypes = {
 export default async function ApprovalsPage({ params }: ApprovalPageTypes) {
   const { groupId } = await params;
   const { user } = await authGuard(groupId);
+
+  const { memberInterestRate } = await getGroupConfig(groupId);
 
   const membership = await prisma.membership.findFirst({
     where: { userId: user.id, groupId },
@@ -101,7 +104,10 @@ export default async function ApprovalsPage({ params }: ApprovalPageTypes) {
           <section className="rounded-[2.5rem] md:rounded-[3.5rem] bg-white/30 border border-white/50 backdrop-blur-lg shadow-xl md:shadow-2xl shadow-slate-200/40 p-1.5 md:p-3">
             <div className="bg-white/20 rounded-[2.2rem] md:rounded-[3rem] p-3 md:p-8 min-h-[300px] md:min-h-[400px]">
               <div className="max-w-7xl mx-auto">
-                <AgentRequestSection requests={loanRequests} />
+                <AgentRequestSection
+                  requests={loanRequests}
+                  memberInterestRate={memberInterestRate}
+                />
               </div>
             </div>
           </section>
