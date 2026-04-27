@@ -30,7 +30,7 @@ export default async function DashboardPage() {
       {/* Timeline - Floating above the glass */}
       {hasGroup && (
         <div className="glass-morphism p-2 rounded-[2.5rem] border border-white/60">
-          <PaymentStatusTimeline isActiveLoan={isActiveLoan} />
+          {/* <PaymentStatusTimeline isActiveLoan={isActiveLoan} /> */}
         </div>
       )}
 
@@ -62,13 +62,14 @@ export default async function DashboardPage() {
           ) : isActiveLoan ? (
             /* Active Loan - Thickest Glass Layer */
             <div className="glass-morphism rounded-[3rem] p-1 border border-white shadow-xl hover:shadow-2xl transition-shadow">
-              <ActiveLoanCard activeLoanDetails={activeLoanDetails} />
+              {/* <ActiveLoanCard activeLoanDetails={activeLoanDetails} /> */}
             </div>
           ) : (
-            <EmptyLoanState
-              loan={pendingOrCancelled}
-              user={{ ...user, groupId: membership?.groupId }}
-            />
+            // <EmptyLoanState
+            //   loan={pendingOrCancelled}
+            //   user={{ ...user, groupId: membership?.groupId }}
+            // />
+            <></>
           )}
         </div>
 

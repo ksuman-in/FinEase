@@ -87,32 +87,46 @@ export default async function ApprovalsPage({ params }: ApprovalPageTypes) {
       </header>
 
       <div className="space-y-12 relative z-10">
-        <div className="space-y-6">
-          <div className="flex items-center justify-between px-4">
-            <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.3em]">
+        <div className="space-y-4 md:space-y-6">
+          {/* Refined Header */}
+          <div className="flex items-center gap-3 px-2 md:px-4">
+            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-slate-200" />
+            <h2 className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-[0.2em] md:tracking-[0.3em] whitespace-nowrap">
               Loan Requests Queue ({loanRequests.length})
             </h2>
+            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-slate-200" />
           </div>
 
-          <section className="rounded-[3.5rem] bg-white/30 border border-white/50 backdrop-blur-lg shadow-2xl shadow-slate-200/40 p-3">
-            <div className="bg-white/20 rounded-[3rem] p-4 md:p-8 min-h-[400px]">
-              <AgentRequestSection requests={loanRequests} />
+          {/* Responsive Premium Container */}
+          <section className="rounded-[2.5rem] md:rounded-[3.5rem] bg-white/30 border border-white/50 backdrop-blur-lg shadow-xl md:shadow-2xl shadow-slate-200/40 p-1.5 md:p-3">
+            <div className="bg-white/20 rounded-[2.2rem] md:rounded-[3rem] p-3 md:p-8 min-h-[300px] md:min-h-[400px]">
+              <div className="max-w-7xl mx-auto">
+                <AgentRequestSection requests={loanRequests} />
+              </div>
             </div>
           </section>
         </div>
 
         {pendingMembers.length > 0 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="flex items-center gap-4 px-4">
-              <span className="h-[1px] flex-1 bg-slate-200" />
-              <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.3em] whitespace-nowrap">
-                Identity Verification Required ({pendingMembers.length})
-              </h2>
-              <span className="h-[1px] flex-1 bg-slate-200" />
+          <div className="space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Refined Header */}
+            <div className="flex items-center gap-3 px-2 md:px-4">
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-slate-200" />
+              <div className="flex flex-col items-center">
+                <h2 className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-[0.2em] md:tracking-[0.3em] whitespace-nowrap">
+                  Identity Verification
+                </h2>
+                <span className="text-[9px] font-bold text-blue-500/60 uppercase tracking-widest">
+                  {pendingMembers.length}{" "}
+                  {pendingMembers.length === 1 ? "Request" : "Requests"}
+                </span>
+              </div>
+              <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-slate-200" />
             </div>
 
-            <div className="rounded-[3rem] bg-blue-50/20 border border-blue-100/50 backdrop-blur-lg p-3">
-              <div className="bg-white/40 rounded-[2.8rem] p-6 md:p-10">
+            {/* Responsive Container */}
+            <div className="rounded-[2rem] md:rounded-[3rem] bg-blue-50/20 border border-blue-100/50 backdrop-blur-lg p-1.5 md:p-3">
+              <div className="bg-white/40 rounded-[1.8rem] md:rounded-[2.8rem] p-3 md:p-10">
                 <div className="max-w-7xl mx-auto">
                   <MemberVerificationSection
                     members={pendingMembers}

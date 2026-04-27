@@ -9,15 +9,16 @@ export async function repayPrincipalAction({
   loanId,
   amount,
   description,
+  groupId,
 }: {
   loanId: string;
   amount: number;
   description?: string;
+  groupId: string;
 }) {
   try {
-    const { user, membership } = await authGuard();
+    const { user } = await authGuard(groupId);
     const userId = user.id;
-    const groupId = membership?.groupId;
 
     if (!userId || !groupId) throw new Error("Unauthorized");
 

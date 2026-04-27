@@ -3,9 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { authGuard } from "../auth-utils";
 import { prisma } from "../db";
-import { LoanStatus } from "@prisma/client";
+import { GroupConfig, LoanStatus } from "@prisma/client";
 import { formatCurrency, formatTime } from "../utils/date-logic";
 import getTotalInHand from "./getTotalInHand";
+import { getGroupConfig } from "../database/group-config";
 
 export default async function requestLoanAction({
   amount,
@@ -23,7 +24,7 @@ export default async function requestLoanAction({
 
   if (!userId) throw new Error("Unauthorized");
 
-  const availableCash = await getTotalInHand();
+  const availableCash = await getTotalInHand(groupId);
 
   const floatAmount = parseFloat(`${amount}`);
   if (!Number.isFinite(floatAmount) || floatAmount <= 0) {
@@ -52,11 +53,11 @@ export default async function requestLoanAction({
       code: "INSUFFICIENT_FUNDS",
     };
   }
-
-  const settings = await prisma.globalSettings.findFirst();
+  const groupConfig = await getGroupConfig(groupId);
+  const { memberInterestRate } = groupConfig as GroupConfig;
 
   const interestRate = parseFloat(
-    String(settings?.memberInterestRate ? settings.memberInterestRate / 12 : 1),
+    String(memberInterestRate ? memberInterestRate / 12 : 1),
   );
 
   try {

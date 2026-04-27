@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import LoanStatusBanner from "@/components/dashboard/LoanStatusBanner";
 import { GroupRole, LoanStatus } from "@prisma/client";
 import { ShieldAlert } from "lucide-react";
+import { getGroupConfig } from "@/lib/database/group-config";
 
 interface PageProps {
   params: Promise<{ groupId: string }>;
@@ -18,6 +19,7 @@ export default async function DashboardPage({ params }: PageProps) {
   const { groupId } = await params;
 
   const { session, user, membership } = await authGuard(groupId);
+  const groupConfig = await getGroupConfig(groupId);
 
   const hasGroup = !!membership?.groupId;
   const isOwner = membership?.role === GroupRole.OWNER || user.isSuperAdmin;
@@ -40,7 +42,10 @@ export default async function DashboardPage({ params }: PageProps) {
     <main className="space-y-8 animate-in fade-in duration-700">
       {hasGroup && (
         <div className="glass-morphism p-2 rounded-[2.5rem] border border-white/60">
-          <PaymentStatusTimeline isActiveLoan={isActiveLoan} />
+          <PaymentStatusTimeline
+            isActiveLoan={isActiveLoan}
+            groupConfig={groupConfig}
+          />
         </div>
       )}
 
@@ -72,12 +77,20 @@ export default async function DashboardPage({ params }: PageProps) {
           ) : isActiveLoan ? (
             /* Active Loan Card for this specific group */
             <div className="glass-morphism rounded-[3rem] p-1 border border-white shadow-xl hover:shadow-2xl transition-shadow">
-              <ActiveLoanCard activeLoanDetails={activeLoanDetails} />
+              <ActiveLoanCard
+                activeLoanDetails={activeLoanDetails}
+                groupId={groupId}
+                groupConfig={groupConfig}
+              />
             </div>
           ) : (
             <EmptyLoanState
               loan={pendingLoan}
-              user={{ ...user, groupId: groupId }}
+              groupId={groupId}
+              groupConfig={{
+                interestStartDay: groupConfig.interestStartDay,
+                interestEndDay: groupConfig.interestEndDay,
+              }}
             />
           )}
         </div>

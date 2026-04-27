@@ -11,7 +11,6 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { TransactionType } from "@prisma/client";
 import { formatCurrency } from "@/lib/utils/date-logic";
 import { generatInformations, transactionType } from "@/utils/constant";
 import Portal from "../ui/Portal";
@@ -193,22 +192,6 @@ export default function TransactionModal({
             onSubmit={handleSubmit(handleFormSubmit)}
             className="relative z-10"
           >
-            {serverError && (
-              <div className="mx-8 mt-8 p-4 bg-rose-50/80 backdrop-blur-md border border-rose-200 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 relative z-20">
-                <div className="w-9 h-9 rounded-xl bg-rose-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-rose-200">
-                  <AlertCircle size={18} strokeWidth={3} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest">
-                    Action Failed
-                  </p>
-                  <p className="text-sm font-bold text-rose-900 leading-tight">
-                    {String(serverError)}
-                  </p>
-                </div>
-              </div>
-            )}
-
             <div className="p-8 pb-4 flex items-center gap-5 bg-white/20">
               <div
                 className={`w-16 h-16 rounded-2xl ${config.badge} flex items-center justify-center border border-white shadow-sm`}
@@ -224,6 +207,21 @@ export default function TransactionModal({
                 </p>
               </div>
             </div>
+            {serverError && (
+              <div className="mx-8 p-4 bg-rose-50/80 backdrop-blur-md border border-rose-200 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 relative z-20">
+                <div className="w-9 h-9 rounded-xl bg-rose-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-rose-200">
+                  <AlertCircle size={18} strokeWidth={3} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest">
+                    Action Failed
+                  </p>
+                  <p className="text-sm font-bold text-rose-900 leading-tight">
+                    {String(serverError)}
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="p-8 pt-4 space-y-8 bg-white/10">
               <div className="space-y-3">
@@ -282,7 +280,6 @@ export default function TransactionModal({
                 />
               </div>
 
-              {/* Contextual Calculation (Request/Repayment) */}
               {mode !== "CONTRIB" && (
                 <div className="bg-slate-900 text-white rounded-[2.5rem] p-8 flex justify-between items-center shadow-2xl shadow-slate-900/20 relative overflow-hidden group">
                   <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.02] to-white/[0.05] pointer-events-none" />

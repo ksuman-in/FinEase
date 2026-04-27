@@ -6,26 +6,25 @@ import TransactionModal from "../model/TransactionModal";
 import { LoanStatus, TransactionType } from "@prisma/client";
 import requestLoanAction from "@/lib/actions/requestLoanAction";
 import { settleMonthlyPaymentAction } from "@/lib/actions/settleMonthlyPaymentAction";
-import { configTimeline } from "@/utils/constant";
 
 type TransactionMode = "NEW_LOAN" | "CONTRIB";
 
 export function EmptyLoanState({
   loan,
-  user,
+  groupId,
+  groupConfig,
 }: {
   loan: { status: string; amount: number } | null;
-  user: { groupId: string | undefined | null };
+  groupId: string;
+  groupConfig: { interestStartDay: number; interestEndDay: number };
 }) {
   const isAlreadyLoanRequested = loan?.status === LoanStatus.REQUEST;
   const [activeMode, setActiveMode] = useState<TransactionMode | null>(null);
-
+  const { interestStartDay, interestEndDay } = groupConfig;
   const day = new Date().getDate();
-  const interestStart = configTimeline.INTEREST.start;
-  const interestEnd = configTimeline.INTEREST.end;
   const isOpen = useMemo(
-    () => day >= interestStart && day <= interestEnd,
-    [day, interestStart, interestEnd],
+    () => day >= interestStartDay && day <= interestEndDay,
+    [day, interestStartDay, interestEndDay],
   );
 
   const handleRequestNewLoan = async (values: {
@@ -34,7 +33,7 @@ export function EmptyLoanState({
   }) => {
     const response = await requestLoanAction({
       ...values,
-      groupId: user?.groupId,
+      groupId: groupId,
     });
     return response as { success?: boolean; error?: string };
   };
@@ -47,6 +46,7 @@ export function EmptyLoanState({
       contributionAmount: values.amount,
       description: values.description,
       interestAmount: 0,
+      groupId: groupId,
     });
     return response as { success?: boolean; error?: string };
   };

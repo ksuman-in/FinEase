@@ -13,14 +13,31 @@ interface LoanProps {
 
 export default function ActiveLoanCard({
   activeLoanDetails,
+  groupId,
+  groupConfig,
 }: {
   activeLoanDetails: LoanProps;
+  groupId: string;
+  groupConfig: {
+    memberInterestRate: number;
+    interestStartDay: number;
+    interestEndDay: number;
+    principalStartDay: number;
+    principalEndDay: number;
+  };
 }) {
-  const { isPrincipalWindow } = getPaymentWindowStatus();
-  const { amount, interestRate, issuedAt, transactions } = activeLoanDetails;
+  const { memberInterestRate } = groupConfig;
+  const { isPrincipalWindow } = getPaymentWindowStatus({
+    groupConfig,
+  });
+  const { amount, issuedAt, transactions } = activeLoanDetails;
   const totalPrincipalPaid = transactions.reduce(
     (acc, tx) => acc + tx.amount,
     0,
+  );
+
+  const interestRate = parseFloat(
+    String(memberInterestRate ? memberInterestRate / 12 : 1),
   );
 
   const remainingPrincipal = amount - totalPrincipalPaid;
@@ -117,6 +134,8 @@ export default function ActiveLoanCard({
         <LoanButton
           loanId={activeLoanDetails.id}
           activeLoanDetails={activeLoanDetails}
+          groupId={groupId}
+          groupConfig={groupConfig}
         />
       </div>
 
