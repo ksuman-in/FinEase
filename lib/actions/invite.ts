@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/db";
 import { Resend } from "resend";
 import { requireGroupOwner } from "../auth-utils";
+import { GroupRole } from "@prisma/client";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -10,6 +11,7 @@ export async function inviteMemberAction(
   email: string,
   phone: string,
   groupId: string | undefined,
+  role: GroupRole,
 ) {
   if (!groupId) throw new Error("Unauthorized");
 
@@ -32,12 +34,14 @@ export async function inviteMemberAction(
       token: newToken,
       expiresAt: expiresAt,
       phoneNumber: phone,
+      role,
     },
     create: {
       email: email.toLowerCase(),
       phoneNumber: phone,
       groupId: groupId,
       token: newToken,
+      role,
       expiresAt: expiresAt,
     },
   });

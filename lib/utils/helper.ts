@@ -25,6 +25,15 @@ interface PaymentWindowParams {
   };
 }
 
+export const currentDay = (now?: Date) => {
+  return Number(
+    new Intl.DateTimeFormat("en-US", {
+      day: "numeric",
+      timeZone: "Asia/Kolkata",
+    }).format(now || new Date()),
+  );
+};
+
 export const getPaymentWindowStatus = (params: PaymentWindowParams) => {
   if (!params?.groupConfig) {
     return {
@@ -35,12 +44,7 @@ export const getPaymentWindowStatus = (params: PaymentWindowParams) => {
   }
   const { now, groupConfig } = params;
 
-  const day = Number(
-    new Intl.DateTimeFormat("en-US", {
-      day: "numeric",
-      timeZone: "Asia/Kolkata",
-    }).format(now || new Date()),
-  );
+  const day = currentDay(now);
   const {
     interestStartDay,
     interestEndDay,

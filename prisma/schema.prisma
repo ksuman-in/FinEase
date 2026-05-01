@@ -9,12 +9,7 @@ datasource db {
 enum GroupRole {
   OWNER
   MEMBER
-}
-
-enum UserRole {
-  MEMBER
   BORROWER
-  ADMIN
 }
 
 enum LoanStatus {
@@ -48,7 +43,7 @@ model User {
 
   phoneNumber String? @unique
 
-  role UserRole @default(MEMBER)
+  role GroupRole @default(MEMBER)
 
   address          String?
   idNumber         String? @unique // e.g., Aadhar, PAN, or DL
@@ -90,10 +85,14 @@ model Membership {
   userId  String
   groupId String
 
+  loan       Loan?
+  customRate Float?
+
   createdAt DateTime @default(now())
 
-  user  User  @relation(fields: [userId], references: [id])
-  group Group @relation(fields: [groupId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
+  group        Group         @relation(fields: [groupId], references: [id])
+  loanArchives LoanArchive[]
 
   @@unique([userId, groupId])
 }
@@ -235,15 +234,85 @@ model Verification {
 }
 
 model AllowedUser {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  phoneNumber String   @unique // Added unique phone number
+  id          String    @id @default(cuid())
+  email       String    @unique
+  phoneNumber String    @unique
+  role        GroupRole @default(MEMBER)
   groupId     String
-  group       Group    @relation(fields: [groupId], references: [id])
-  token       String   @unique @default(uuid())
-  createdAt   DateTime @default(now())
+  group       Group     @relation(fields: [groupId], references: [id])
+  token       String    @unique @default(uuid())
+  createdAt   DateTime  @default(now())
   expiresAt   DateTime
 
   @@unique([email, groupId])
   @@unique([phoneNumber, groupId])
+}
+
+// Represents the financial agreement between the Vault and a Member
+model Loan {
+  id String @id @default(cuid())
+
+  // Relations
+  membershipId String     @unique
+  membership   Membership @relation(fields: [membershipId], references: [id])
+
+  // Financial Core
+  principalAmount    Float // The initial capital assigned
+  remainingPrincipal Float // Current outstanding amount
+  interestRate       Float // Unique ROI (e.g., 18.0) assigned by Owner
+  tenureMonths       Int // Total duration (6-60 months)
+
+  // Status & Lifecycle
+  status    LoanStatus @default(ACTIVE)
+  startDate DateTime   @default(now())
+  endDate   DateTime?
+
+  // Repayment Tracking
+  repayments Repayment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([membershipId])
+}
+
+model LoanArchive {
+  id                 String     @id @default(cuid())
+  membershipId       String
+  membership         Membership @relation(fields: [membershipId], references: [id]) // Add this relation
+  principalAmount    Int
+  interestRate       Float
+  tenureMonths       Int
+  totalInterestPaid  Int
+  totalPrincipalPaid Int
+  startDate          DateTime
+  endDate            DateTime   @default(now())
+}
+
+// Tracking individual EMIs and contributions
+model Repayment {
+  id     String @id @default(cuid())
+  loanId String
+  loan   Loan   @relation(fields: [loanId], references: [id], onDelete: Cascade)
+
+  amountPaid    Float // Total EMI amount
+  principalPaid Float // Portion reducing the principal
+  interestPaid  Float // Portion contributing to group yield
+
+  paymentDate DateTime        @default(now())
+  status      RepaymentStatus @default(COMPLETED)
+
+  // Metadata for the 25th—30th window enforcement
+  billingMonth Int // 1-12
+  billingYear  Int
+
+  createdAt DateTime @default(now())
+
+  @@index([loanId])
+}
+
+enum RepaymentStatus {
+  PENDING
+  COMPLETED
+  OVERDUE
 }

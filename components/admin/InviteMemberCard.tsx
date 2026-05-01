@@ -11,6 +11,7 @@ const inviteSchema = z.object({
   email: z.string().email("Invalid email"),
   phone: z.string().min(10, "Invalid phone"),
   selectedGroupId: z.string().min(1, "Please select a group"),
+  role: z.enum(["MEMBER", "OWNER", "BORROWER"]),
 });
 
 type InviteFormValues = z.infer<typeof inviteSchema>;
@@ -35,29 +36,32 @@ export default function InviteMemberCard({
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<InviteFormValues>({
     resolver: zodResolver(inviteSchema),
     defaultValues: {
       selectedGroupId: groupId || "",
+      role: "MEMBER",
     },
   });
+
+  const selectedRole = watch("role");
 
   useEffect(() => {
     if (groupId) setValue("selectedGroupId", groupId);
   }, [groupId, setValue]);
 
   const onSubmit = async (values: InviteFormValues) => {
-    setIsSuccess(false);
     try {
       const result = await inviteMemberAction(
         values.email,
         values.phone,
         values.selectedGroupId,
+        values.role,
       );
       setGeneratedLink(result.inviteLink);
-      reset({ selectedGroupId: values.selectedGroupId });
-      setIsSuccess(true);
+      reset({ selectedGroupId: values.selectedGroupId, email: "", phone: "" });
     } catch (err) {
       alert("Something went wrong. Please try again.");
     }
@@ -142,6 +146,93 @@ export default function InviteMemberCard({
           </div>
         </div>
 
+        <div className="space-y-3 mb-8">
+          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">
+            Invitation Authority Level
+          </label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Member Radio */}
+            <label
+              className={`cursor-pointer p-4 rounded-2xl border-2 transition-all flex flex-col gap-2 ${
+                selectedRole === "MEMBER"
+                  ? "border-blue-600 bg-blue-50/30 shadow-md"
+                  : "border-slate-100 bg-slate-50"
+              }`}
+            >
+              <input
+                {...register("role")}
+                type="radio"
+                value="MEMBER"
+                className="hidden"
+              />
+              <div className="flex justify-between items-start">
+                <span className="text-[10px] font-black text-slate-900 uppercase">
+                  Member
+                </span>
+                <div
+                  className={`w-3 h-3 rounded-full border-2 ${selectedRole === "MEMBER" ? "border-blue-600 bg-blue-600" : "border-slate-300"}`}
+                />
+              </div>
+              <p className="text-[8px] text-slate-500 font-bold leading-tight">
+                12% Savings Rate participant.
+              </p>
+            </label>
+
+            {/* Owner Radio */}
+            <label
+              className={`cursor-pointer p-4 rounded-2xl border-2 transition-all flex flex-col gap-2 ${
+                selectedRole === "OWNER"
+                  ? "border-indigo-600 bg-indigo-50/30 shadow-md"
+                  : "border-slate-100 bg-slate-50"
+              }`}
+            >
+              <input
+                {...register("role")}
+                type="radio"
+                value="OWNER"
+                className="hidden"
+              />
+              <div className="flex justify-between items-start">
+                <span className="text-[10px] font-black text-slate-900 uppercase">
+                  Owner
+                </span>
+                <div
+                  className={`w-3 h-3 rounded-full border-2 ${selectedRole === "OWNER" ? "border-indigo-600 bg-indigo-600" : "border-slate-300"}`}
+                />
+              </div>
+              <p className="text-[8px] text-slate-500 font-bold leading-tight">
+                Full Group Oversight.
+              </p>
+            </label>
+
+            <label
+              className={`cursor-pointer p-4 rounded-2xl border-2 transition-all flex flex-col gap-2 ${
+                selectedRole === "BORROWER"
+                  ? "border-rose-600 bg-rose-50/30 shadow-md"
+                  : "border-slate-100 bg-slate-50"
+              }`}
+            >
+              <input
+                {...register("role")}
+                type="radio"
+                value="BORROWER"
+                className="hidden"
+              />
+              <div className="flex justify-between items-start">
+                <span className="text-[10px] font-black text-slate-900 uppercase">
+                  Borrower
+                </span>
+                <div
+                  className={`w-3 h-3 rounded-full border-2 ${selectedRole === "BORROWER" ? "border-rose-600 bg-rose-600" : "border-slate-300"}`}
+                />
+              </div>
+              <p className="text-[8px] text-slate-500 font-bold leading-tight">
+                Active 18% Loan interest status.
+              </p>
+            </label>
+          </div>
+        </div>
+
         {generatedLink && (
           <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center justify-between animate-in fade-in zoom-in-95">
             <div className="overflow-hidden mr-4">
@@ -174,8 +265,6 @@ export default function InviteMemberCard({
         >
           {isSubmitting ? (
             <Loader2 className="animate-spin w-5 h-5" />
-          ) : isSuccess ? (
-            <CheckCircle2 size={20} />
           ) : (
             "Whitelist & Generate Link"
           )}
