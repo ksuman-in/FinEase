@@ -235,8 +235,8 @@ model Verification {
 
 model AllowedUser {
   id          String    @id @default(cuid())
-  email       String    @unique
-  phoneNumber String    @unique
+  email       String
+  phoneNumber String
   role        GroupRole @default(MEMBER)
   groupId     String
   group       Group     @relation(fields: [groupId], references: [id])
