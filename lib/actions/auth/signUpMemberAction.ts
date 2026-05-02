@@ -15,7 +15,7 @@ export async function signUpMemberAction({
   const allowed = await prisma.allowedUser.findUnique({
     where: { token: token },
   });
-
+  console.log({ allowed });
   if (!allowed) {
     return { error: "Invalid or expired invitation link." };
   }
@@ -33,6 +33,7 @@ export async function signUpMemberAction({
         email: allowed.email.toLowerCase(),
         phoneNumber: allowed.phoneNumber,
         name: allowed.email.split("@")[0],
+        role: allowed.role,
         password: password,
       },
     });
@@ -46,7 +47,7 @@ export async function signUpMemberAction({
         data: {
           userId: res.user.id,
           groupId: allowed.groupId,
-          role: GroupRole.MEMBER,
+          role: allowed.role || GroupRole.MEMBER,
         },
       });
 

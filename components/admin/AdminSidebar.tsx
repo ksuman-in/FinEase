@@ -2,20 +2,28 @@
 import { logoutAction } from "@/lib/actions/auth";
 import {
   LayoutDashboard,
-  Users,
-  ShieldCheck,
-  Settings,
   LogOut,
   ChevronRight,
+  Landmark,
+  UserCheck,
+  ReceiptIndianRupee,
+  ShieldAlert,
+  Settings2,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Command Center", href: "/admin" },
-  { icon: Users, label: "Member Directory", href: "/admin/members" },
-  { icon: ShieldCheck, label: "Liquidity Pool", href: "/admin/pool" },
-  { icon: Settings, label: "System Config", href: "/admin/settings" },
+  { icon: Landmark, label: "Vault Directory", href: "/admin/groups" },
+  { icon: UserCheck, label: "Identity Vetting", href: "/admin/kyc" },
+  {
+    icon: ReceiptIndianRupee,
+    label: "Global Ledger",
+    href: "/admin/transactions",
+  },
+  { icon: ShieldAlert, label: "Risk Management", href: "/admin/defaults" },
+  // { icon: Settings2, label: "Protocol Rules", href: "/admin/config" },
 ];
 
 export default function AdminSidebar() {
@@ -26,7 +34,7 @@ export default function AdminSidebar() {
   };
 
   return (
-    <nav className="hidden lg:flex w-72 h-[calc(100vh-2rem)] m-4 bg-white border border-slate-100 rounded-[2.5rem] p-8 flex-col shadow-2xl sticky top-4">
+    <nav className="flex w-full min-h-full bg-white p-8 flex-col">
       <div className="mb-12 px-2">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-slate-900 rounded-2xl flex items-center justify-center text-white font-black shadow-lg">
@@ -45,7 +53,10 @@ export default function AdminSidebar() {
 
       <div className="flex-1 space-y-2">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            item.href === "/admin"
+              ? pathname === "/admin"
+              : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
@@ -68,7 +79,7 @@ export default function AdminSidebar() {
         })}
       </div>
 
-      <div className="mt-auto space-y-2">
+      <div className="mt-auto space-y-2 pt-8">
         <Link
           href="/dashboard"
           className="flex items-center gap-4 p-4 rounded-2xl font-black text-[10px] uppercase tracking-widest text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all border border-blue-100"
@@ -76,14 +87,15 @@ export default function AdminSidebar() {
           <LayoutDashboard size={18} />
           Member Dashboard
         </Link>
-
-        <button
-          className="w-full flex items-center gap-4 p-4 rounded-2xl text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 transition-all"
-          onClick={handleLogout}
-        >
-          <LogOut size={18} />
-          Terminate Session
-        </button>
+        <div className="mt-auto space-y-2 pt-10 pb-6">
+          <button
+            className="w-full flex items-center gap-4 p-4 rounded-2xl text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 transition-all"
+            onClick={handleLogout}
+          >
+            <LogOut size={18} />
+            Terminate Session
+          </button>
+        </div>
       </div>
     </nav>
   );

@@ -36,7 +36,13 @@ export default async function ApprovalsPage({ params }: ApprovalPageTypes) {
     },
     include: {
       user: {
-        select: { id: true, name: true, email: true, phoneNumber: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phoneNumber: true,
+          role: true,
+        },
       },
     },
   });

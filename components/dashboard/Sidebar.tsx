@@ -31,8 +31,8 @@ export default function Sidebar({
   const menuItems = [
     { name: "Overview", href: `${dashboardUrl}`, icon: LayoutDashboard },
     {
-      name: "Approvals",
-      href: `${dashboardUrl}/approvals`,
+      name: "Owner",
+      href: `${dashboardUrl}/owner`,
       icon: ShieldCheck,
     },
     {
@@ -57,7 +57,7 @@ export default function Sidebar({
           const isActive = pathname === item.href;
           const Icon = item.icon;
           const isOwnerLink =
-            item.href === `/dashboard/${membership?.groupId}/approvals`;
+            item.href === `/dashboard/${membership?.groupId}/owner`;
 
           if (isOwnerLink && !isOwner) {
             return null;

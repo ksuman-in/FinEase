@@ -1,28 +1,29 @@
-import AdminMobileMenu from "@/components/admin/AdminMobileMenu";
-import AdminSidebar from "@/components/admin/AdminSidebar";
+import { authGuard } from "@/lib/auth-utils";
+import { prisma } from "@/lib/db";
+import { redirect } from "next/navigation";
+import AdminLayoutClient from "./AdminLayoutClient";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // 1. Authenticate the Super Admin
+  const { user } = await authGuard();
+
+  // 2. Verify Super Admin status
+  // Assuming isSuperAdmin is a boolean on your User model
+  if (!user.isSuperAdmin) {
+    redirect("/dashboard");
+  }
+
+  // 3. Fetch basic group info for the sidebar if needed
+  const membership = await prisma.membership.findFirst({
+    where: { userId: user.id },
+    include: { group: { select: { name: true } } },
+  });
+
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
-      <div className="hidden lg:block w-72 shrink-0 border-r border-slate-200/60 bg-white/50 backdrop-blur-md">
-        <AdminSidebar />
-      </div>
-
-      <main className="flex-1 relative">
-        <div className="hidden lg:block absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[500px] h-[500px] bg-blue-100/40 rounded-full blur-[120px] pointer-events-none" />
-
-        <div className="relative z-10 p-4 md:p-8 lg:p-10 xl:p-14 pb-32 lg:pb-14">
-          <div className="max-w-[1400px] mx-auto">{children}</div>
-        </div>
-      </main>
-
-      <div className="lg:hidden">
-        <AdminMobileMenu />
-      </div>
-    </div>
+    <AdminLayoutClient membership={membership}>{children}</AdminLayoutClient>
   );
 }

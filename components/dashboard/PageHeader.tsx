@@ -1,9 +1,13 @@
 import { authGuard } from "@/lib/auth-utils";
 import MobileNav from "./MobileNav";
 import { prisma } from "@/lib/db";
+import getTotalInHand from "@/lib/actions/getTotalInHand";
+import { formatCurrency } from "@/lib/utils/date-logic";
 
 export default async function PageHeader({ groupId }: { groupId: string }) {
   const { membership, user } = await authGuard(groupId);
+
+  const totalCash = await getTotalInHand(groupId);
 
   const pendingCount = await prisma.memberLoan.count({
     where: {
@@ -33,8 +37,19 @@ export default async function PageHeader({ groupId }: { groupId: string }) {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">{""}</div>
-          <div className="flex items-center gap-3 pl-4 border-l border-white/40">
+          {/* Total In-Hand Cash Metric */}
+          <div className="hidden sm:flex flex-col items-end text-right pr-4 border-r border-white/40">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+              In-Hand Cash
+            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-lg font-black text-slate-900 tracking-tighter leading-none">
+                {formatCurrency(totalCash)}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 pl-4">
             <div className="hidden md:flex flex-col items-end text-right">
               <span className="text-xs font-black text-slate-900 leading-none">
                 {user.name}

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { UserRole } from "@prisma/client";
+import { GroupRole } from "@prisma/client";
 import { authGuard } from "@/lib/auth-utils";
 
 export default async function DashboardRedirectPage({
@@ -11,8 +11,8 @@ export default async function DashboardRedirectPage({
   const { groupId } = await params;
   const { user } = await authGuard(groupId);
 
-  if (user?.role === UserRole.BORROWER) {
-    redirect("/borrower/dashboard");
+  if (user?.role === GroupRole.BORROWER) {
+    redirect("/borrower");
   }
 
   const membership = await prisma.membership.findFirst({
