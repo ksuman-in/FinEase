@@ -7,8 +7,12 @@ import GroupSelectionCard from "@/components/dashboard/GroupSelectionCard";
 export default async function DashboardRedirectPage() {
   const session = await getSession();
 
+  if (!session) {
+    redirect("/login");
+  }
+
   const memberships = await prisma.membership.findMany({
-    where: { userId: session?.user.id },
+    where: { userId: session.user.id },
     include: {
       group: true,
     },
