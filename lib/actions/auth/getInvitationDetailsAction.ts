@@ -14,6 +14,7 @@ export async function getInvitationDetailsAction(token: string) {
         phoneNumber: true,
         groupId: true,
         expiresAt: true,
+        role: true,
       },
     });
 
@@ -35,6 +36,7 @@ export async function getInvitationDetailsAction(token: string) {
       email: allowed.email,
       phoneNumber: allowed.phoneNumber,
       groupId: allowed.groupId,
+      role: allowed.role,
     };
   } catch (error) {
     console.error("GET_INVITATION_ERROR:", error);

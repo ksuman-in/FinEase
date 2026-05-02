@@ -3,9 +3,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { UserPlus, Loader2, CheckCircle2, LayoutGrid } from "lucide-react";
+import { UserPlus, Loader2, LayoutGrid } from "lucide-react";
 import { useState, useEffect } from "react";
 import { inviteMemberAction } from "@/lib/actions/invite";
+import { toast } from "sonner";
 
 const inviteSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -53,6 +54,9 @@ export default function InviteMemberCard({
   }, [groupId, setValue]);
 
   const onSubmit = async (values: InviteFormValues) => {
+    const toastId = toast.loading("Processing whitelist request...");
+    setGeneratedLink(null);
+
     try {
       const result = await inviteMemberAction(
         values.email,
@@ -60,10 +64,40 @@ export default function InviteMemberCard({
         values.selectedGroupId,
         values.role,
       );
-      setGeneratedLink(result.inviteLink);
-      reset({ selectedGroupId: values.selectedGroupId, email: "", phone: "" });
+
+      if (result.success) {
+        setIsSuccess(true);
+        if (result.inviteLink) {
+          toast.success("New user whitelisted!", {
+            id: toastId,
+            description: "An invitation link has been generated.",
+          });
+          setGeneratedLink(result.inviteLink);
+        } else {
+          toast.success("Member added directly!", {
+            id: toastId,
+            description: result.message,
+          });
+          setGeneratedLink(null);
+        }
+        reset({
+          selectedGroupId: values.selectedGroupId,
+          email: "",
+          phone: "",
+        });
+        setTimeout(() => setIsSuccess(false), 3000);
+      } else {
+        toast.error("Action Failed", {
+          id: toastId,
+          description: result.message || "Failed to generate link.",
+        });
+      }
     } catch (err) {
-      alert("Something went wrong. Please try again.");
+      console.log({ err });
+      toast.error("Protocol Error", {
+        id: toastId,
+        description: "Could not connect to the vault service.",
+      });
     }
   };
 
