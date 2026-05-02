@@ -308,7 +308,7 @@ model Repayment {
 
   createdAt DateTime @default(now())
 
-  @@index([loanId])
+  @@unique([loanId, billingMonth, billingYear])
 }
 
 enum RepaymentStatus {
