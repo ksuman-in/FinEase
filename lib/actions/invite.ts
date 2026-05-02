@@ -1,11 +1,10 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { Resend } from "resend";
-import { requireGroupOwner } from "../auth-utils";
-import { GroupRole } from "@prisma/client";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { requireSuperAdmin } from "../auth-utils";
+import { GroupRole, Prisma } from "@prisma/client";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { revalidatePath } from "next/cache";
 
 export async function inviteMemberAction(
   email: string,
@@ -13,64 +12,100 @@ export async function inviteMemberAction(
   groupId: string | undefined,
   role: GroupRole,
 ) {
-  if (!groupId) throw new Error("Unauthorized");
+  try {
+    if (!groupId) {
+      return { success: false, message: "Unauthorized: Missing Group ID." };
+    }
 
-  await requireGroupOwner(groupId);
+    await requireSuperAdmin();
+    const normalizedEmail = email.toLowerCase();
 
-  const EXPIRES_IN_DAYS = 7;
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + EXPIRES_IN_DAYS);
+    const existingUser = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
 
-  const newToken = crypto.randomUUID();
+    if (existingUser) {
+      const existingMembership = await prisma.membership.findUnique({
+        where: {
+          userId_groupId: {
+            userId: existingUser.id,
+            groupId: groupId,
+          },
+        },
+      });
 
-  const allowedUser = await prisma.allowedUser.upsert({
-    where: {
-      email_groupId: {
-        email: email.toLowerCase(),
-        groupId: groupId,
+      if (existingMembership) {
+        return {
+          success: false,
+          message: "Member is already active in this group.",
+        };
+      }
+
+      await prisma.membership.create({
+        data: {
+          userId: existingUser.id,
+          groupId: groupId,
+          role: role,
+        },
+      });
+      revalidatePath("/admin");
+      return {
+        success: true,
+        message: `Success! ${normalizedEmail} has been added directly to the group.`,
+      };
+    }
+
+    const EXPIRES_IN_DAYS = 7;
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + EXPIRES_IN_DAYS);
+    const newToken = crypto.randomUUID();
+
+    const allowedUser = await prisma.allowedUser.upsert({
+      where: {
+        email_groupId: { email: normalizedEmail, groupId },
       },
-    },
-    update: {
-      token: newToken,
-      expiresAt: expiresAt,
-      phoneNumber: phone,
-      role,
-    },
-    create: {
-      email: email.toLowerCase(),
-      phoneNumber: phone,
-      groupId: groupId,
-      token: newToken,
-      role,
-      expiresAt: expiresAt,
-    },
-  });
+      update: {
+        token: newToken,
+        expiresAt,
+        phoneNumber: phone,
+        role,
+      },
+      create: {
+        email: normalizedEmail,
+        phoneNumber: phone,
+        groupId,
+        token: newToken,
+        role,
+        expiresAt,
+      },
+    });
 
-  const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
-  const inviteLink = `${baseUrl}/register?token=${encodeURIComponent(allowedUser.token)}`;
+    const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+    const inviteLink = `${baseUrl}/register?token=${encodeURIComponent(allowedUser.token)}`;
+    revalidatePath("/admin");
+    return {
+      success: true,
+      inviteLink,
+      message: "New user whitelisted. Please share the invite link.",
+    };
+  } catch (error) {
+    if (isRedirectError(error)) throw error;
+    console.error("Invite Action Error:", error);
 
-  // try {
-  //   await resend.emails.send({
-  //     from: "Power 10 <onboarding@resend.dev>",
-  //     to: email,
-  //     subject: "You have been invited to join the Vault",
-  //     html: `
-  //       <div style="font-family: sans-serif; padding: 20px;">
-  //         <h2>Welcome to Power 10</h2>
-  //         <p>You have been whitelisted for the group management system.</p>
-  //         <p>Click the link below to set your password and activate your account:</p>
-  //         <a href="${inviteLink}" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin-top: 10px;">
-  //           Activate My Account
-  //         </a>
-  //         <p style="margin-top: 20px; color: #64748b; font-size: 12px;">
-  //           If the button doesn't work, copy this link: ${inviteLink}
-  //         </p>
-  //       </div>
-  //     `,
-  //   });
-  // } catch (error) {
-  //   console.error("Email failed to send:", error);
-  // }
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return {
+        success: false,
+        message: "A conflict occurred with this group membership.",
+      };
+    }
 
-  return { success: true, inviteLink };
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "A protocol error occurred.",
+    };
+  }
 }

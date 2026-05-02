@@ -22,10 +22,6 @@ export default async function HomePage() {
       redirect("/onboarding");
     }
   } else {
-    if (user.role === GroupRole.BORROWER) {
-      redirect("/borrower");
-    } else {
-      redirect("/dashboard");
-    }
+    redirect("/dashboard");
   }
 }

@@ -73,8 +73,8 @@ export const requireGroupOwner = async (groupId: string) => {
     },
   });
 
-  if (membership?.role !== GroupRole.OWNER) {
-    redirect("/dashboard");
+  if (!membership || membership.role !== "OWNER") {
+    throw new Error("UNAUTHORIZED_OWNER_REQUIRED");
   }
 
   return { session, membership };

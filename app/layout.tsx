@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata = {
@@ -28,6 +29,22 @@ export default async function RootLayout({
         </div>
 
         <main className="relative z-10 min-h-screen">{children}</main>
+        <Toaster
+          position="top-right"
+          richColors
+          toastOptions={{
+            unstyled: false,
+            classNames: {
+              toast:
+                "rounded-[1.5rem] border-white/40 backdrop-blur-2xl shadow-2xl font-bold",
+              success:
+                "bg-emerald-500/20 text-emerald-900 border-emerald-200/50",
+              error: "bg-rose-500/20 text-rose-900 border-rose-200/50",
+              info: "bg-blue-500/20 text-blue-900 border-blue-200/50",
+              warning: "bg-amber-500/20 text-amber-900 border-amber-200/50",
+            },
+          }}
+        />
       </body>
     </html>
   );
