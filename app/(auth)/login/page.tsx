@@ -7,6 +7,7 @@ import {
   Landmark,
 } from "lucide-react";
 import Logo from "@/components/ui/logo";
+import Link from "next/link";
 
 export default async function LoginPage() {
   return (
@@ -85,6 +86,16 @@ export default async function LoginPage() {
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
                     Private Financial System <br />
                     Encrypted // Logged // Monitored
+                  </p>
+                  <p className="text-xs text-slate-500 mt-4 font-medium">
+                    By continuing, you agree to our{" "}
+                    <Link
+                      href="/terms-and-conditions"
+                      className="text-blue-600 hover:text-blue-700 hover:underline"
+                    >
+                      Terms and Conditions
+                    </Link>
+                    .
                   </p>
                 </div>
               </div>

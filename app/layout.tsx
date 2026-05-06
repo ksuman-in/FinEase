@@ -5,9 +5,6 @@ export const metadata = {
   title: "VaultEase | Group Savings & Lending",
   description:
     "Secure, transparent, and easy management for group financial vaults.",
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 export default async function RootLayout({
