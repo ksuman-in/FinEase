@@ -1,16 +1,26 @@
-# Easy Finance
+# 🏦 Easy Finance (VaultEase)
 
-Easy Finance is a Next.js app built with React 19, Tailwind CSS, Better Auth authentication, and Prisma for database access. It provides a finance dashboard and member reporting interface with secure sign-in and user data storage.
+> **Secure, transparent, and easy management for private group financial vaults.**
 
-## Features
+Easy Finance (VaultEase) is a modern Next.js platform built to manage group savings, lending, and peer-to-peer liquidity. Designed for the Power 10 financial ecosystem, it handles 12% target yield savings and 18% fixed-rate loan management with an institutional-grade ledger.
 
-- Next.js App Router
-- Prisma ORM with Neon adapter
-- Tailwind CSS styling
-- Responsive navbar with mobile menu
-- Member dashboard and monthly report pages
+## ✨ Key Features
 
-## Project setup
+* **Smart Ledger:** Digital group accounting and capital tracking.
+* **Role-Based Portals:** Dedicated, secure dashboards for Members and Borrowers.
+* **High Security:** Invite-only access, end-to-end encrypted authentication using Better Auth.
+* **Growth Analytics:** Real-time sync for fair splits and high-yield interest tracking.
+* **Modern UI:** Responsive, premium glass-morphic interface built with Tailwind CSS.
+
+## 🛠️ Tech Stack
+
+* **Framework:** [Next.js](https://nextjs.org/) (App Router, React 19)
+* **Database:** [Prisma ORM](https://www.prisma.io/) with [Neon PostgreSQL](https://neon.tech/)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+* **Authentication:** Better Auth
+* **Icons & UI:** [Lucide React](https://lucide.dev/), Sonner (Toasts)
+
+## 🚀 Project Setup
 
 ```bash
 npm install
@@ -18,7 +28,7 @@ npm install
 
 ### Environment
 
-Create a `.env` file at the project root and add the required values:
+Create a `.env` file at the root of the project and add your required values:
 
 ```env
 DATABASE_URL=your-database-connection-string
