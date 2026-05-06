@@ -107,6 +107,16 @@ export default async function RegisterPage({
                     Already registered? Log in
                   </Link>
                 </p>
+                <p className="text-xs text-slate-500 mt-4 text-center font-medium">
+                  By continuing, you agree to our{" "}
+                  <Link
+                    href="/terms-and-conditions"
+                    className="text-blue-600 hover:text-blue-700 hover:underline"
+                  >
+                    Terms and Conditions
+                  </Link>
+                  .
+                </p>
               </div>
             </div>
           </div>
