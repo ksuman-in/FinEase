@@ -8,8 +8,14 @@ import {
 } from "lucide-react";
 import Logo from "@/components/ui/logo";
 import Link from "next/link";
+import { getSession } from "@/lib/auth-utils";
+import { redirect } from "next/navigation";
 
 export default async function LoginPage() {
+  const session = await getSession();
+  if (session?.user.id) {
+    redirect("/dashboard");
+  }
   return (
     <div className="min-h-screen dashboard-bg text-slate-900 relative overflow-hidden flex items-center justify-center font-sans">
       {/* Organic Sphere Backgrounds (Matching your reference image) */}
