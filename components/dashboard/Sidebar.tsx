@@ -45,16 +45,17 @@ export default function Sidebar({
   ];
   const pathname = usePathname();
   const isOwner = membership?.role === GroupRole.OWNER;
-
   const handleLogout = async () => {
     await logoutAction();
   };
-
   return (
     <div className="flex flex-col h-full justify-between p-4 relative z-30">
       <div className="space-y-3">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            item.href === dashboardUrl
+              ? pathname === dashboardUrl
+              : pathname.startsWith(item.href);
           const Icon = item.icon;
           const isOwnerLink =
             item.href === `/dashboard/${membership?.groupId}/owner`;
@@ -99,14 +100,14 @@ export default function Sidebar({
                 />
               )}
 
-              {isOwnerLink && isOwner && pendingCount && pendingCount > 0 && (
+              {isOwnerLink && isOwner && pendingCount && pendingCount > 0 ? (
                 <span className="absolute -top-1 -right-1 flex h-5 w-5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-lg bg-rose-400 opacity-75"></span>
                   <span className="relative inline-flex items-center justify-center rounded-lg h-5 w-5 bg-rose-500 text-white text-[10px] font-black shadow-lg border border-white">
                     {pendingCount}
                   </span>
                 </span>
-              )}
+              ) : null}
             </Link>
           );
         })}

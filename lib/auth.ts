@@ -14,7 +14,8 @@ export const auth = betterAuth({
       phoneNumber?: string;
       [key: string]: unknown;
     }) {
-      const { email, phoneNumber } = data;
+      const normalizedEmail = data.email.toLowerCase();
+      const { phoneNumber } = data;
 
       if (!phoneNumber) {
         throw new APIError("BAD_REQUEST", {
@@ -24,7 +25,7 @@ export const auth = betterAuth({
 
       const invited = await prisma.allowedUser.findFirst({
         where: {
-          email: email.toLowerCase(),
+          email: normalizedEmail,
           phoneNumber: phoneNumber,
         },
       });
@@ -35,8 +36,29 @@ export const auth = betterAuth({
         });
       }
 
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          OR: [{ email: normalizedEmail }, { phoneNumber }],
+        },
+      });
+
+      if (existingUser) {
+        if (existingUser.email === normalizedEmail) {
+          throw new APIError("BAD_REQUEST", {
+            message:
+              "An account already exists with this email. Please login or use a different email.",
+          });
+        }
+
+        throw new APIError("BAD_REQUEST", {
+          message:
+            "This phone number is already registered. Please use a different phone number or contact support.",
+        });
+      }
+
       return {
         ...data,
+        email: normalizedEmail,
       };
     },
   },

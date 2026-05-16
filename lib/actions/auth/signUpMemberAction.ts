@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { GroupRole } from "@prisma/client";
+import { GroupRole, Prisma } from "@prisma/client";
 
 export async function signUpMemberAction({
   token,
@@ -15,7 +15,7 @@ export async function signUpMemberAction({
   const allowed = await prisma.allowedUser.findUnique({
     where: { token: token },
   });
-  console.log({ allowed });
+
   if (!allowed) {
     return { error: "Invalid or expired invitation link." };
   }
@@ -23,6 +23,29 @@ export async function signUpMemberAction({
   if (allowed.expiresAt && new Date() > new Date(allowed.expiresAt)) {
     return {
       error: "This invitation link has expired. Please contact your admin.",
+    };
+  }
+
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: allowed.email.toLowerCase() },
+        { phoneNumber: allowed.phoneNumber },
+      ],
+    },
+  });
+
+  if (existingUser) {
+    if (existingUser.email === allowed.email.toLowerCase()) {
+      return {
+        error:
+          "An account already exists with this email. Please login instead.",
+      };
+    }
+
+    return {
+      error:
+        "This phone number is already registered. Please use the existing account or contact support.",
     };
   }
 
@@ -58,11 +81,36 @@ export async function signUpMemberAction({
 
     return { success: true };
   } catch (error) {
-    return {
-      error:
-        error instanceof Error
-          ? error.message
-          : "An error occurred during registration",
-    };
+    let message =
+      error instanceof Error
+        ? error.message
+        : "An error occurred during registration";
+
+    const prismaError =
+      error instanceof Prisma.PrismaClientKnownRequestError
+        ? error
+        : error && typeof error === "object" && "cause" in error
+          ? ((error as { cause?: unknown }).cause as unknown)
+          : undefined;
+
+    if (
+      prismaError instanceof Prisma.PrismaClientKnownRequestError &&
+      prismaError.code === "P2002"
+    ) {
+      if (Array.isArray(prismaError.meta?.target)) {
+        if (prismaError.meta.target.includes("phoneNumber")) {
+          message =
+            "This phone number is already registered. Please use a different phone number or contact support.";
+        } else if (prismaError.meta.target.includes("email")) {
+          message =
+            "This email is already registered. Please login or use a different email.";
+        } else {
+          message =
+            "A unique field conflict occurred during registration. Verify your email and phone number.";
+        }
+      }
+    }
+
+    return { error: message };
   }
 }
