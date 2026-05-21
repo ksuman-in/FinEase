@@ -24,17 +24,20 @@ export async function inviteMemberAction(
       where: { phoneNumber: phone },
     });
 
-    if (existingPhoneUser) {
+    const existingUser = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (
+      existingPhoneUser &&
+      (!existingUser || existingPhoneUser.id !== existingUser.id)
+    ) {
       return {
         success: false,
         message:
           "This phone number is already linked to an existing user. Use a different phone number or add the member directly to the group.",
       };
     }
-
-    const existingUser = await prisma.user.findUnique({
-      where: { email: normalizedEmail },
-    });
 
     if (existingUser) {
       const existingMembership = await prisma.membership.findUnique({

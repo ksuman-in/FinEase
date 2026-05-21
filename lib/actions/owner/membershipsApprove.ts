@@ -25,8 +25,8 @@ export async function processMemberApprovalAction(
       };
     }
     // Fetch the membership to get the actual userId
-    const membership = await prisma.membership.findUnique({
-      where: { id: membershipId },
+    const membership = await prisma.membership.findFirst({
+      where: { id: membershipId, groupId },
     });
 
     if (!membership) {

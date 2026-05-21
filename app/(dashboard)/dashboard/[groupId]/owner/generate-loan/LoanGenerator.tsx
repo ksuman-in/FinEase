@@ -96,7 +96,7 @@ export default function LoanGenerator({
       reset({ amount: 50000, roi: 18, tenure: 24 });
     });
   };
-
+  const hasBorrowers = borrowerList.length > 0;
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -137,21 +137,21 @@ export default function LoanGenerator({
             </label>
             <div className="relative">
               <select
-                {...register("email")}
+                {...register("email", { required: "Please select a borrower" })}
                 className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 appearance-none font-bold text-slate-900 transition-all cursor-pointer"
               >
                 <option value="" disabled>
-                  Select Borrower Name
+                  {hasBorrowers
+                    ? "Select Borrower Name"
+                    : "No eligible borrowers"}
                 </option>
-                {borrowerList.length === 0 && groupId ? (
-                  <option value={groupId}>Current Group</option>
-                ) : (
-                  borrowerList.map((g) => (
-                    <option key={g.user.id} value={g.user.email}>
-                      {g.user.name}
-                    </option>
-                  ))
-                )}
+                {hasBorrowers && groupId
+                  ? borrowerList.map((g) => (
+                      <option key={g.user.id} value={g.user.email}>
+                        {g.user.name}
+                      </option>
+                    ))
+                  : null}
               </select>
             </div>
           </div>
@@ -246,7 +246,7 @@ export default function LoanGenerator({
 
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || borrowerList.length === 0}
             className="w-full py-6 bg-blue-600 disabled:bg-slate-800 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2"
           >
             {isPending ? (
