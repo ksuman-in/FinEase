@@ -28,7 +28,21 @@ type LoanFormData = {
   tenure: number;
 };
 
-export default function LoanGenerator({ groupId }: { groupId: string }) {
+type BorrowerType = {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
+
+export default function LoanGenerator({
+  groupId,
+  borrowerList,
+}: {
+  groupId: string;
+  borrowerList: BorrowerType[];
+}) {
   const {
     register,
     watch,
@@ -82,7 +96,7 @@ export default function LoanGenerator({ groupId }: { groupId: string }) {
       reset({ amount: 50000, roi: 18, tenure: 24 });
     });
   };
-
+  const hasBorrowers = borrowerList.length > 0;
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -122,20 +136,23 @@ export default function LoanGenerator({ groupId }: { groupId: string }) {
               Borrower Email
             </label>
             <div className="relative">
-              <UserPlus
-                className="absolute left-6 top-5 text-slate-400"
-                size={20}
-              />
-              <input
-                {...register("email", {
-                  required: "Valid email is required for the digital ledger.",
-                  pattern: {
-                    value: /^\S+@\S+$/i,
-                    message: "Incorrect email format.",
-                  },
-                })}
-                className="w-full h-16 bg-white border border-slate-100 pl-14 p-6 rounded-2xl font-black outline-none focus:ring-4 focus:ring-blue-500/5 transition-all"
-              />
+              <select
+                {...register("email", { required: "Please select a borrower" })}
+                className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 appearance-none font-bold text-slate-900 transition-all cursor-pointer"
+              >
+                <option value="" disabled>
+                  {hasBorrowers
+                    ? "Select Borrower Name"
+                    : "No eligible borrowers"}
+                </option>
+                {hasBorrowers && groupId
+                  ? borrowerList.map((g) => (
+                      <option key={g.user.id} value={g.user.email}>
+                        {g.user.name}
+                      </option>
+                    ))
+                  : null}
+              </select>
             </div>
           </div>
 
@@ -229,7 +246,7 @@ export default function LoanGenerator({ groupId }: { groupId: string }) {
 
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || borrowerList.length === 0}
             className="w-full py-6 bg-blue-600 disabled:bg-slate-800 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2"
           >
             {isPending ? (

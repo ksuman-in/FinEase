@@ -9,7 +9,7 @@ export default function AdminLayoutClient({
   membership,
 }: {
   children: React.ReactNode;
-  membership: any;
+  membership: { group: { name: string | null } } | null;
 }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

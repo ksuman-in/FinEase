@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import LoanGenerator from "./LoanGenerator";
 import { ArrowLeft, ShieldAlert } from "lucide-react";
 import Link from "next/link";
+import { GroupRole } from "@prisma/client";
 
 export default async function GenerateLoanPage({
   params,
@@ -19,6 +20,23 @@ export default async function GenerateLoanPage({
       role: "OWNER",
     },
   });
+
+  const borrowerList = await prisma.membership.findMany({
+    where: {
+      groupId: groupId,
+      role: GroupRole.BORROWER,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
   if (!membership) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -67,7 +85,7 @@ export default async function GenerateLoanPage({
         </p>
       </header>
 
-      <LoanGenerator groupId={groupId} />
+      <LoanGenerator groupId={groupId} borrowerList={borrowerList} />
 
       <footer className="pt-10 border-t border-slate-100 flex flex-col items-center gap-2">
         <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">

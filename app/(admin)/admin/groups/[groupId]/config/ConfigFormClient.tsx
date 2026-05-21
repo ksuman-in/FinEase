@@ -38,8 +38,7 @@ export default function ConfigFormClient({
 
   const currentBorrowerRate = watch("borrowerInterestRate");
 
-  const onSubmit = async (data: any) => {
-    console.log("Updating Group:", groupId, data);
+  const onSubmit = async (data: unknown) => {
     setIsSuccess(true);
     setTimeout(() => setIsSuccess(false), 3000);
   };
